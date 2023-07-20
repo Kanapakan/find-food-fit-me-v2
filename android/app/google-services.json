@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "475909373293",
+    "project_id": "find-food-fit-me-v2",
+    "storage_bucket": "find-food-fit-me-v2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475909373293:android:d2f781c2366f152d6d6e64",
+        "android_client_info": {
+          "package_name": "com.kapi.findfoodv2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475909373293-mpa8rk0hjvhplb55p00st7vql86f4tg5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCzNsb82-zG3krwCUplbMBJ589AdJp0Sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475909373293-mpa8rk0hjvhplb55p00st7vql86f4tg5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "475909373293-sg4us0jnjairm40a3jh2bgt3hb619dm1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kapi.findfoodv2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
