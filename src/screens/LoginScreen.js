@@ -10,11 +10,13 @@ import {
   Image,
   KeyboardAvoidingView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Input from "../components/input";
+import Input from "../components/Inputs";
+import Buttons from "../components/Buttons";
 
 
 const LoginScreen = ({navigation, route}) => {
@@ -62,7 +64,7 @@ const LoginScreen = ({navigation, route}) => {
   };
 
   return (
-    <Pressable className="flex-1" onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
         <Image
           className="left-0 h-36 w-36"
@@ -71,7 +73,6 @@ const LoginScreen = ({navigation, route}) => {
         <View style={styles.boxText}>
           <Text style={styles.baseText}>
             <Text className="text-4xl font-semibold">Find Food Fit Me</Text>
-            {/* <Text style={styles.normaltext}>หาอาหารที่ใช่ จากอะไรที่ชอบ</Text> */}
           </Text>
         </View>
         <View className="items-center mt-10 mb-5">
@@ -107,12 +108,7 @@ const LoginScreen = ({navigation, route}) => {
 
         {/* Buttons */}
         <View className="items-center mt-10">
-          <Pressable
-            // onPress={handleLogin}
-            style={GlobalStyles.btnContainer}
-          >
-            <Text className="text-lg text-white font-bold">Log in</Text>
-          </Pressable>
+        <Buttons text="Log In"/>
         </View>
         <View className="self-center pt-10">
           <TouchableOpacity
@@ -128,7 +124,7 @@ const LoginScreen = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    </Pressable>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -147,7 +143,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   boxText: {
-    // flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },

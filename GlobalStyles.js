@@ -6,25 +6,12 @@ export default StyleSheet.create({
     // backgroundColor: npLBlue,
     // paddingTop: Platform.OS === 'android' ? 25 : 0
   },
-  textInput: {
-    // width: "100%",
-    height: 55,
-    // borderColor: "#8ec18d",
-    // borderWidth: 2,
-    // borderRadius: 10,
-    fontSize: 18,
-    // textAlign: "center",
-    paddingLeft: 5,
-    backgroundColor: "#8ec18d",
-    
-  },
   inputContailner: {
     width: "90%",
     height: 55,
     borderColor: "#8ec18d",
     borderWidth: 2,
     borderRadius: 10,
-    // fontSize: 18,
     flexDirection: 'row',
     paddingHorizontal: 15,
     textAlign: "center",
@@ -40,5 +27,13 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  dropdownContainer: {
+    height: 55,
+    width: '90%',
+    borderColor: "#8ec18d",
+    borderWidth: 2,
+    borderRadius: 10,
+    flexDirection: 'row',
+  }
 
 });
