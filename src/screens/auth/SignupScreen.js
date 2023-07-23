@@ -1,4 +1,4 @@
-import GlobalStyles from "../../GlobalStyles";
+import GlobalStyles from "../../../GlobalStyles";
 import {
   View,
   Text,
@@ -12,9 +12,10 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Input from "../components/Inputs";
+import Input from "../../components/Inputs";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import Buttons from "../components/Buttons";
+import Buttons from "../../components/Buttons";
+import {ROUTES} from "../../constants";
 
 const SignUpScreen = ({ navigation, route }) => {
   const [inputs, setInputs] = useState({
@@ -59,7 +60,7 @@ const SignUpScreen = ({ navigation, route }) => {
 
     if (isValid) {
       // register();
-      navigation.navigate("SignupUserInfo", {email:  inputs.email, password:  inputs.password});
+      navigation.navigate(ROUTES.SIGNUP_USER_INFO, {email:  inputs.email, password:  inputs.password});
     }
   };
 
@@ -78,7 +79,7 @@ const SignUpScreen = ({ navigation, route }) => {
             <View className="items-center flex flex-col gap-5 mt-0.5">
               <Image
                 style={styles.diet}
-                source={require("../../assets/Diet.gif")}
+                source={require("../../../assets/Diet.gif")}
               />
             </View>
             <View className="items-center" behavior="padding">
@@ -119,7 +120,7 @@ const SignUpScreen = ({ navigation, route }) => {
               <TouchableOpacity
                 className="flex-row gap-2"
                 onPress={() => {
-                  navigation.navigate("Login");
+                  navigation.navigate(ROUTES.LOGIN);
                 }}
               >
                 <Text className="text-md">Already have an account ?</Text>

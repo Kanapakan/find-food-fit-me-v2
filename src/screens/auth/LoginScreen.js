@@ -1,4 +1,4 @@
-import GlobalStyles from "../../GlobalStyles";
+import GlobalStyles from "../../../GlobalStyles";
 import {
   View,
   Text,
@@ -15,8 +15,9 @@ import {
 import React, { useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Input from "../components/Inputs";
-import Buttons from "../components/Buttons";
+import Input from "../../components/Inputs";
+import Buttons from "../../components/Buttons";
+import {ROUTES} from "../../constants";
 
 
 const LoginScreen = ({navigation, route}) => {
@@ -68,7 +69,7 @@ const LoginScreen = ({navigation, route}) => {
       <SafeAreaView style={styles.container}>
         <Image
           className="left-0 h-36 w-36"
-          source={require("../../assets/fade_leaf_left-removebg.png")}
+          source={require("../../../assets/fade_leaf_left-removebg.png")}
         />
         <View style={styles.boxText}>
           <Text style={styles.baseText}>
@@ -78,7 +79,7 @@ const LoginScreen = ({navigation, route}) => {
         <View className="items-center mt-10 mb-5">
           <Image
             style={styles.line}
-            source={require("../../assets/line-removebg.png")}
+            source={require("../../../assets/line-removebg.png")}
           />
         </View>
 
@@ -113,7 +114,7 @@ const LoginScreen = ({navigation, route}) => {
         <View className="self-center pt-10">
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("Signup");
+              navigation.navigate(ROUTES.SIGNUP);
             }}
             className="flex-row gap-2"
           >

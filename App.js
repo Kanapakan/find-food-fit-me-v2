@@ -4,10 +4,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
 // import { TailwindProvider } from "tailwindcss-react-native"
-import LoginScreen from "./src/screens/LoginScreen";
-import SignupScreen from "./src/screens/SignupScreen";
+import LoginScreen from "./src/screens/auth/LoginScreen";
+import SignupScreen from "./src/screens/auth/SignupScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SignupUserInfoScreen from "./src/screens/SignupUserInfoScreen";
+import SignupUserInfoScreen from "./src/screens/auth/SignupUserInfoScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,8 +29,8 @@ export default function App() {
           options={{ headerShown: false }}
           component={LoginScreen}
         />*/}
-        {/* <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
-        <Stack.Screen name="SignupUserInfo" options={{ headerShown: false }} component={SignupUserInfoScreen} /> */}
+        <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
+        <Stack.Screen name="SignupUserInfo" options={{ headerShown: false }} component={SignupUserInfoScreen} />
         <Stack.Screen name="Home" options={{ headerShown: false }} component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>

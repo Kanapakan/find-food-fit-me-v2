@@ -1,4 +1,4 @@
-import GlobalStyles from "../../GlobalStyles";
+import GlobalStyles from "../../../GlobalStyles";
 import {
   View,
   Text,
@@ -15,14 +15,15 @@ import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
-import COLORS from "../components/Colors";
-import Buttons from "../components/Buttons";
-import Dropdowns from "../components/Dropdowns";
-import Input from "../components/Inputs";
-import { Data } from "../../dataJson/data";
+import COLORS from "../../constants/colors";
+import Buttons from "../../components/Buttons";
+import Dropdowns from "../../components/Dropdowns";
+import Input from "../../components/Inputs";
+import { Data } from "../../../dataJson/data";
 
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from '@react-native-firebase/firestore';
+import { ROUTES } from "../../constants";
 
 const SignupUserInfoScreen = ({ navigation, route }, props) => {
   const usersCollection = firestore().collection('Users');
@@ -157,7 +158,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
 
     if (isValid) {
       register();
-      navigation.navigate("Home");
+      navigation.navigate(ROUTES.HOME);
     }
   };
 

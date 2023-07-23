@@ -1,7 +1,7 @@
 import GlobalStyles from "../../GlobalStyles";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import React, { useState } from "react";
-import COLORS from "./Colors";
+import COLORS from "../constants/colors";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Input = ({

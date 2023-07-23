@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import GlobalStyles from "../../GlobalStyles";
-import COLORS from "./Colors";
+import COLORS from "../constants/colors";
 
 const Dropdowns = ({
   headLabel,
