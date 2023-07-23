@@ -108,7 +108,7 @@ const LoginScreen = ({navigation, route}) => {
 
         {/* Buttons */}
         <View className="items-center mt-10">
-        <Buttons text="Log In"/>
+        <Buttons text="Log In" validate={validate}/>
         </View>
         <View className="self-center pt-10">
           <TouchableOpacity

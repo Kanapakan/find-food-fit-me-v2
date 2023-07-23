@@ -59,7 +59,7 @@ const SignUpScreen = ({ navigation, route }) => {
 
     if (isValid) {
       // register();
-      navigation.navigate("SignupUserInfo");
+      navigation.navigate("SignupUserInfo", {email:  inputs.email, password:  inputs.password});
     }
   };
 
@@ -112,7 +112,7 @@ const SignUpScreen = ({ navigation, route }) => {
             </View>
 
             <View className="items-center flex mt-5">
-            <Buttons text="Next"/>
+            <Buttons text="Next" validate={validate}/>
             </View>
 
             <View className="self-center pt-5">

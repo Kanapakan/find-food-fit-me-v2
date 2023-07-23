@@ -28,10 +28,10 @@ export default function App() {
           name="Login"
           options={{ headerShown: false }}
           component={LoginScreen}
-        />
-        <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> */}
-        <Stack.Screen name="SignupUserInfo" options={{ headerShown: false }} component={SignupUserInfoScreen} />
-        {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
+        />*/}
+        {/* <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
+        <Stack.Screen name="SignupUserInfo" options={{ headerShown: false }} component={SignupUserInfoScreen} /> */}
+        <Stack.Screen name="Home" options={{ headerShown: false }} component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

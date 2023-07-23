@@ -9,6 +9,7 @@ import {
   Keyboard,
   ScrollView,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
@@ -20,7 +21,14 @@ import Dropdowns from "../components/Dropdowns";
 import Input from "../components/Inputs";
 import { Data } from "../../dataJson/data";
 
-const SignupUserInfoScreen = () => {
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firestore from '@react-native-firebase/firestore';
+
+const SignupUserInfoScreen = ({ navigation, route }, props) => {
+  const usersCollection = firestore().collection('Users');
+  const email = route.params.email;
+  const password = route.params.password;
+  // navigation.goBack(null)
   const [inputs, setInputs] = useState({
     name: "",
     age: 0,
@@ -30,6 +38,7 @@ const SignupUserInfoScreen = () => {
     activity: "",
   });
   const [errors, setErrors] = useState({});
+  const[isLoading, setisLoading] = useState(false);
 
   let bmr;
   let dailyCalVal;
@@ -52,6 +61,65 @@ const SignupUserInfoScreen = () => {
       dailyCalVal = 1.9;
       break;
   }
+
+  const createProfile = async (response) => {
+    if (inputs.gender == "male") {
+      bmr = parseInt(
+        66 + 13.7 * inputs.weight + 5 * inputs.height - 6.8 * inputs.age
+      );
+      dailyCal = parseInt(bmr * dailyCalVal);
+    } else if (inputs.gender == "female") {
+      bmr = parseInt(
+        665 + 9.6 * inputs.weight + 1.8 * inputs.height - 4.7 * inputs.age
+      );
+      dailyCal = parseInt(bmr * dailyCalVal);
+    }
+
+    firestore()
+      .collection('Users')
+      .add({
+        userId: response.user.uid,
+              email: email,
+              gender: inputs.gender,
+              age: inputs.age,
+              height: inputs.height,
+              weight: inputs.weight,
+              activity: inputs.activity,
+              BMR: bmr,
+              TDEE: dailyCal,
+      })
+      .then(() => {
+          setInputs({
+            name: "",
+            age: 0,
+            gender: "",
+            height: 0,
+            weight: 0,
+            activity: "",
+          })
+        console.log('User added!');
+        setisLoading(false);
+      });
+  };
+
+  const register = async () => {
+    if (email && password) {
+      try {
+        const response = await auth().createUserWithEmailAndPassword(
+          email,
+          password
+        );
+
+        if (response.user) {
+          await createProfile(response);
+          // nav.replace("Main");
+        }
+      } catch (e) {
+        console.log(e);
+        // Alert.alert("Oops", "Please check your form and try again");
+      }
+    }
+  };
 
   const validate = () => {
     Keyboard.dismiss();
@@ -88,8 +156,8 @@ const SignupUserInfoScreen = () => {
     }
 
     if (isValid) {
-      // register();
-      navigation.navigate("SignupUserInfo");
+      register();
+      navigation.navigate("Home");
     }
   };
 
@@ -99,6 +167,16 @@ const SignupUserInfoScreen = () => {
   const handleError = (error, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
+
+  if(isLoading) {
+    return (
+        <View style={styles.preloader}>
+            <ActivityIndicator size="large" color="#547F53" />
+            <Text>Loading...</Text>
+        </View>
+    )
+}
+
   return (
     <TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
