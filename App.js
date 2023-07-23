@@ -2,12 +2,12 @@ import { StatusBar } from "expo-status-bar";
 import { Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./src/screens/HomeScreen";
+import {HomeScreen, SignupScreen, SignupUserInfoScreen} from "./src/screens";
 // import { TailwindProvider } from "tailwindcss-react-native"
 import LoginScreen from "./src/screens/auth/LoginScreen";
-import SignupScreen from "./src/screens/auth/SignupScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SignupUserInfoScreen from "./src/screens/auth/SignupUserInfoScreen";
+import BottomTabNavigator from './src/navigations/BottomTabNavigator';
+import { ROUTES } from "./src/constants";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,9 +29,9 @@ export default function App() {
           options={{ headerShown: false }}
           component={LoginScreen}
         />*/}
-        <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
-        <Stack.Screen name="SignupUserInfo" options={{ headerShown: false }} component={SignupUserInfoScreen} />
-        <Stack.Screen name="Home" options={{ headerShown: false }} component={HomeScreen} />
+        {/* <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
+        <Stack.Screen name="Signup User Info" options={{ headerShown: false }} component={SignupUserInfoScreen} /> */}
+        <Stack.Screen name={ROUTES.BOTTOM_TAB} options={{ headerShown: false }} component={BottomTabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );
