@@ -7,4 +7,5 @@ export default {
   green: "#8ec18d",
   darkGreen: "#547f53",
   red: "red",
+  // tranparent: 'opacity: 0.6;'
 };
