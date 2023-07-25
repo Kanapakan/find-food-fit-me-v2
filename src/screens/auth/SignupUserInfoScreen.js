@@ -24,6 +24,7 @@ import { Data } from "../../../dataJson/data";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from '@react-native-firebase/firestore';
 import { ROUTES } from "../../constants";
+import Loader from "../../components/Loader";
 
 const SignupUserInfoScreen = ({ navigation, route }, props) => {
   const usersCollection = firestore().collection('Users');
@@ -75,7 +76,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
       );
       dailyCal = parseInt(bmr * dailyCalVal);
     }
-
+    setisLoading(true);
     firestore()
       .collection('Users')
       .add({
@@ -100,6 +101,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
           })
         console.log('User added!');
         setisLoading(false);
+        navigation.navigate(ROUTES.BOTTOM_TAB);
       });
   };
 
@@ -110,14 +112,13 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
           email,
           password
         );
-
+        setisLoading(true)
         if (response.user) {
           await createProfile(response);
-          // nav.replace("Main");
         }
       } catch (e) {
+        setisLoading(false)
         console.log(e);
-        // Alert.alert("Oops", "Please check your form and try again");
       }
     }
   };
@@ -158,7 +159,6 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
 
     if (isValid) {
       register();
-      navigation.navigate(ROUTES.HOME);
     }
   };
 
@@ -171,12 +171,9 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
 
   if(isLoading) {
     return (
-        <View style={styles.preloader}>
-            <ActivityIndicator size="large" color="#547F53" />
-            <Text>Loading...</Text>
-        </View>
+        <Loader />
     )
-}
+  }
 
   return (
     <TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
@@ -259,16 +256,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  preloader: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  }
 });
 
 export default SignupUserInfoScreen;

@@ -12,24 +12,58 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Input from "../../components/Inputs";
 import Buttons from "../../components/Buttons";
 import {ROUTES} from "../../constants";
 
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import Loader from "../../components/Loader";
 
 const LoginScreen = ({navigation, route}) => {
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
   const [isLoading, setisLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  // const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      if (user) {
+        navigation.navigate(ROUTES.BOTTOM_TAB);
+      }
+    })
+    return unsubscribe
+  }, [])
+
+  const login = async () => {
+    
+    if (inputs.email && inputs.password) {
+      try {
+        const userCredential = await auth().signInWithEmailAndPassword(
+          inputs.email,
+          inputs.password
+        );
+        // setisLoading(true);
+        if (userCredential.user) {
+          setisLoading(false);
+          navigation.navigate(ROUTES.BOTTOM_TAB);
+        }
+      } catch (e) {
+        if (e.code === 'auth/user-not-found') {
+          setisLoading(false);
+          // Email does not exist;
+          handleError("The email does not exist. Please sign up.", "email");
+        } else {
+          setisLoading(false);
+          console.error('Error signing in:', e);
+        }
+      }
+    }
+  }
 
   const validate = () => {
     Keyboard.dismiss();
@@ -63,6 +97,12 @@ const LoginScreen = ({navigation, route}) => {
   const handleError = (error, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
+
+  if(isLoading) {
+    return (
+      <Loader />
+    )
+  }
 
   return (
     <TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>

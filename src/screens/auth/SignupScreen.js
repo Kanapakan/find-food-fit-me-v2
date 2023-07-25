@@ -17,6 +17,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview"
 import Buttons from "../../components/Buttons";
 import {ROUTES} from "../../constants";
 
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+
 const SignUpScreen = ({ navigation, route }) => {
   const [inputs, setInputs] = useState({
     email: "",
@@ -26,6 +28,29 @@ const SignUpScreen = ({ navigation, route }) => {
   const [isLoading, setisLoading] = useState(false);
   const [errors, setErrors] = useState({});
   // const [loading, setLoading] = React.useState(false);
+
+  const checkEmailExist = async () => {
+    if (inputs.email && inputs.password) {
+      try {
+        const userCredential = await auth().signInWithEmailAndPassword(
+          inputs.email,
+          inputs.password
+        );
+
+        if (userCredential) {
+          // Email exist
+          handleError("The email address is already in use", "email");
+        }
+      } catch (e) {
+        if (e.code === 'auth/user-not-found') {
+          // Email does not exist;
+          navigation.navigate(ROUTES.SIGNUP_USER_INFO, {email: inputs.email, password: inputs.password});
+        } else {
+          console.error('Error signing up:', e);
+        }
+      }
+    }
+  }
 
   const validate = () => {
     Keyboard.dismiss();
@@ -58,9 +83,10 @@ const SignUpScreen = ({ navigation, route }) => {
       isValid = false;
     }
 
+    
+
     if (isValid) {
-      // register();
-      navigation.navigate(ROUTES.SIGNUP_USER_INFO, {email:  inputs.email, password:  inputs.password});
+      checkEmailExist();
     }
   };
 

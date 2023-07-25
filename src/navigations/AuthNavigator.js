@@ -1,9 +1,10 @@
 import { View, Text } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { ROUTES } from "../constants";
 import {LoginScreen, SignupScreen, SignupUserInfoScreen} from '../screens';
-const Stack = createStackNavigator();
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import BottomTabNavigator from "./BottomTabNavigator";
+const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
   return (
@@ -15,6 +16,11 @@ const AuthNavigator = () => {
         />
         <Stack.Screen name={ROUTES.SIGNUP} options={{ headerShown: false }} component={SignupScreen} /> 
         <Stack.Screen name={ROUTES.SIGNUP_USER_INFO} options={{ headerShown: false }} component={SignupUserInfoScreen} />
+        <Stack.Screen
+            name={ROUTES.BOTTOM_TAB}
+            options={{ headerShown: false }}
+            component={BottomTabNavigator}
+          />
     </Stack.Navigator>
   );
 };

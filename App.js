@@ -2,12 +2,15 @@ import { StatusBar } from "expo-status-bar";
 import { Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {HomeScreen, SignupScreen, SignupUserInfoScreen} from "./src/screens";
+import { HomeScreen, SignupScreen, SignupUserInfoScreen } from "./src/screens";
 // import { TailwindProvider } from "tailwindcss-react-native"
 import LoginScreen from "./src/screens/auth/LoginScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
-import BottomTabNavigator from './src/navigations/BottomTabNavigator';
+import BottomTabNavigator from "./src/navigations/BottomTabNavigator";
 import { ROUTES } from "./src/constants";
+import { Provider } from "react-redux";
+import { store } from "./src/store";
+import AuthNavigator from "./src/navigations/AuthNavigator";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,17 +25,11 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {/* <Stack.Screen
-          name="Login"
-          options={{ headerShown: false }}
-          component={LoginScreen}
-        />*/}
-        {/* <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
-        <Stack.Screen name="Signup User Info" options={{ headerShown: false }} component={SignupUserInfoScreen} /> */}
-        <Stack.Screen name={ROUTES.BOTTOM_TAB} options={{ headerShown: false }} component={BottomTabNavigator} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        {/* {isAuthenticated ? AuthNavigator : DrawerNavigator } */}
+        <AuthNavigator />
+      </NavigationContainer>
+    </Provider>
   );
 }

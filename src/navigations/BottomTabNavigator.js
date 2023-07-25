@@ -38,7 +38,7 @@ const BottomTabNavigator = () => {
             iconName = focused ? "person-sharp" : "person-outline";
           }
 
-          return <Icon name={iconName} size={30} color={color} />;
+          return <Icon name={iconName} size={28} color={color} />;
         },
       })}
     >
@@ -57,6 +57,6 @@ export default BottomTabNavigator;
 
 const styles = StyleSheet.create({
   tabBarStyle: {
-    height: 70,
+    height: Platform.OS === 'ios' ? 90: 60,
   },
 });
