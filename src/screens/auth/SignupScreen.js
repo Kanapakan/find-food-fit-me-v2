@@ -10,7 +10,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Input from "../../components/Inputs";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
@@ -18,6 +18,7 @@ import Buttons from "../../components/Buttons";
 import {ROUTES} from "../../constants";
 
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import Loader from "../../components/Loader";
 
 const SignUpScreen = ({ navigation, route }) => {
   const [inputs, setInputs] = useState({
@@ -27,28 +28,40 @@ const SignUpScreen = ({ navigation, route }) => {
   });
   const [isLoading, setisLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  // const [loading, setLoading] = React.useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      if (user) {
+        navigation.navigate(ROUTES.SIGNUP_USER_INFO);
+      }
+    })
+    return unsubscribe
+  }, [])
+
 
   const checkEmailExist = async () => {
+    // setisLoading(true);
     if (inputs.email && inputs.password) {
-      try {
-        const userCredential = await auth().signInWithEmailAndPassword(
+      await auth().createUserWithEmailAndPassword(
           inputs.email,
           inputs.password
-        );
-
-        if (userCredential) {
-          // Email exist
+        ).then((userCredential) => {
+          // Signed in 
+          if (userCredential.user) {
+            console.log('Create new');
+            navigation.navigate(ROUTES.SIGNUP_USER_INFO, {email: inputs.email, password: inputs.password});
+            // setisLoading(false);
+          }
+        })
+        .catch((e) => {
+        if (e.code === 'auth/email-already-in-use') {
+          // Email is already in use
           handleError("The email address is already in use", "email");
-        }
-      } catch (e) {
-        if (e.code === 'auth/user-not-found') {
-          // Email does not exist;
-          navigation.navigate(ROUTES.SIGNUP_USER_INFO, {email: inputs.email, password: inputs.password});
+          
         } else {
           console.error('Error signing up:', e);
         }
-      }
+        });
     }
   }
 
@@ -97,6 +110,12 @@ const SignUpScreen = ({ navigation, route }) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
 
+  if(isLoading) {
+    return (
+      <Loader />
+    )
+  }
+
   return (
     <TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
@@ -139,7 +158,7 @@ const SignUpScreen = ({ navigation, route }) => {
             </View>
 
             <View className="items-center flex mt-5">
-            <Buttons text="Next" validate={validate}/>
+            <Buttons text="Sign Up" action={validate}/>
             </View>
 
             <View className="self-center pt-5">

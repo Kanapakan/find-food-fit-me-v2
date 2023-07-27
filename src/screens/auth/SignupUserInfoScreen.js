@@ -10,8 +10,9 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
   ActivityIndicator,
+  Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview";
@@ -27,9 +28,6 @@ import { ROUTES } from "../../constants";
 import Loader from "../../components/Loader";
 
 const SignupUserInfoScreen = ({ navigation, route }, props) => {
-  const usersCollection = firestore().collection('Users');
-  const email = route.params.email;
-  const password = route.params.password;
   // navigation.goBack(null)
   const [inputs, setInputs] = useState({
     name: "",
@@ -40,11 +38,38 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
     activity: "",
   });
   const [errors, setErrors] = useState({});
-  const[isLoading, setisLoading] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
+
+  const hasUnsavedChanges = Boolean(inputs);
 
   let bmr;
   let dailyCalVal;
   let dailyCal;
+
+  // useEffect(() => {
+  //     navigation.addListener('beforeRemove', (e) => {
+  //       const action = e.data.action;
+  //       if (!hasUnsavedChanges) {
+  //         return;
+  //       }
+
+  //       e.preventDefault();
+
+  //       Alert.alert(
+  //         'Discard changes?',
+  //         'You have unsaved changes. Are you sure to discard them and leave the screen?',
+  //         [
+  //           { text: "Don't leave", style: 'cancel', onPress: () => {} },
+  //           {
+  //             text: 'Discard',
+  //             style: 'destructive',
+  //             onPress: () => navigation.dispatch(action),
+  //           },
+  //         ]
+  //       );
+  //     }),
+  //   [hasUnsavedChanges, navigation]
+  // }, []);
 
   switch (inputs.activity) {
     case "sedentary":
@@ -64,63 +89,40 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
       break;
   }
 
-  const createProfile = async (response) => {
-    if (inputs.gender == "male") {
+  const createProfile = async () => {
+    setisLoading(true);
+    if (inputs.gender === "male") {
       bmr = parseInt(
         66 + 13.7 * inputs.weight + 5 * inputs.height - 6.8 * inputs.age
       );
       dailyCal = parseInt(bmr * dailyCalVal);
-    } else if (inputs.gender == "female") {
+    } else if (inputs.gender === "female") {
       bmr = parseInt(
         665 + 9.6 * inputs.weight + 1.8 * inputs.height - 4.7 * inputs.age
       );
       dailyCal = parseInt(bmr * dailyCalVal);
     }
-    setisLoading(true);
-    firestore()
+    await firestore()
       .collection('Users')
-      .add({
-        userId: response.user.uid,
-              email: email,
-              gender: inputs.gender,
-              age: inputs.age,
-              height: inputs.height,
-              weight: inputs.weight,
-              activity: inputs.activity,
-              BMR: bmr,
-              TDEE: dailyCal,
+      .doc(auth().currentUser?.uid)
+      .set({
+        userId: auth().currentUser?.uid,
+        email: auth().currentUser?.email,
+        gender: inputs.gender,
+        age: inputs.age,
+        height: inputs.height,
+        weight: inputs.weight,
+        activity: inputs.activity,
+        BMR: bmr,
+        TDEE: dailyCal,
+
       })
       .then(() => {
-          setInputs({
-            name: "",
-            age: 0,
-            gender: "",
-            height: 0,
-            weight: 0,
-            activity: "",
-          })
         console.log('User added!');
-        setisLoading(false);
+      }).then(() => {
         navigation.navigate(ROUTES.BOTTOM_TAB);
+        setisLoading(false);
       });
-  };
-
-  const register = async () => {
-    if (email && password) {
-      try {
-        const response = await auth().createUserWithEmailAndPassword(
-          email,
-          password
-        );
-        setisLoading(true)
-        if (response.user) {
-          await createProfile(response);
-        }
-      } catch (e) {
-        setisLoading(false)
-        console.log(e);
-      }
-    }
   };
 
   const validate = () => {
@@ -140,6 +142,9 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
     if (!inputs.age) {
       handleError("Please input age", "age");
       isValid = false;
+    } else if (inputs.age < 18 || inputs.age > 80) {
+      handleError("Please input age between 18-80 years", "age");
+      isValid = false;
     }
 
     if (!inputs.height) {
@@ -158,7 +163,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
     }
 
     if (isValid) {
-      register();
+      createProfile();
     }
   };
 
@@ -169,9 +174,9 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
 
-  if(isLoading) {
+  if (isLoading) {
     return (
-        <Loader />
+      <Loader />
     )
   }
 
@@ -180,13 +185,13 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
       <SafeAreaView style={styles.container}>
         <ScrollView>
           <KeyboardAwareScrollView>
-            <View className="items-center pt-6">
-              <Text className="pb-7 text-center">
+            <View className="items-center pt-7">
+              <Text className="pb-6 text-center">
                 <Text
                   className="text-3xl font-bold"
                   style={{ color: COLORS.darkGreen }}
                 >
-                  Create an Account
+                  Personal Information
                 </Text>
               </Text>
 
@@ -211,7 +216,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
                 onChangeText={(text) => handleOnchange(text, "age")}
                 onFocus={() => handleError(null, "age")}
                 label="Age (years)"
-                placeholder="Enter your age"
+                placeholder="Enter your age (ages 18-80 years)"
                 keyboardType="number-pad"
                 error={errors.age}
               />
@@ -243,7 +248,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
               />
             </View>
             <View className="items-center mt-5 mb-10">
-              <Buttons text="Sign Up" validate={validate} />
+              <Buttons text="Save" action={validate} />
             </View>
           </KeyboardAwareScrollView>
         </ScrollView>

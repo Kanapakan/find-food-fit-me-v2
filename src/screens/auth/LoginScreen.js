@@ -20,6 +20,7 @@ import Buttons from "../../components/Buttons";
 import {ROUTES} from "../../constants";
 
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firestore from '@react-native-firebase/firestore';
 import Loader from "../../components/Loader";
 
 const LoginScreen = ({navigation, route}) => {
@@ -29,33 +30,41 @@ const LoginScreen = ({navigation, route}) => {
   });
   const [isLoading, setisLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const userRef = firestore().collection('Users')
+
+  const checkUserExist = async () => {
+    const doc = await userRef.doc(auth().currentUser?.uid).get()
+    if (!doc.exists) {
+      navigation.navigate(ROUTES.SIGNUP_USER_INFO);
+    } else {
+      navigation.navigate(ROUTES.BOTTOM_TAB);
+    }
+  }
 
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(user => {
+    const unsubscribe = auth().onAuthStateChanged(async user => {
       if (user) {
-        navigation.navigate(ROUTES.BOTTOM_TAB);
-      }
+        checkUserExist();
+      } 
     })
     return unsubscribe
   }, [])
 
   const login = async () => {
-    
+    setisLoading(true);
     if (inputs.email && inputs.password) {
       try {
         const userCredential = await auth().signInWithEmailAndPassword(
           inputs.email,
           inputs.password
         );
-        // setisLoading(true);
         if (userCredential.user) {
+          checkUserExist();
           setisLoading(false);
-          navigation.navigate(ROUTES.BOTTOM_TAB);
         }
       } catch (e) {
         if (e.code === 'auth/user-not-found') {
           setisLoading(false);
-          // Email does not exist;
           handleError("The email does not exist. Please sign up.", "email");
         } else {
           setisLoading(false);
@@ -149,7 +158,7 @@ const LoginScreen = ({navigation, route}) => {
 
         {/* Buttons */}
         <View className="items-center mt-10">
-        <Buttons text="Log In" validate={validate}/>
+        <Buttons text="Log In" action={validate}/>
         </View>
         <View className="self-center pt-10">
           <TouchableOpacity

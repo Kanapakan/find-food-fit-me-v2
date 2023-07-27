@@ -10,7 +10,6 @@ import BottomTabNavigator from "./src/navigations/BottomTabNavigator";
 import { ROUTES } from "./src/constants";
 import { Provider } from "react-redux";
 import { store } from "./src/store";
-import AuthNavigator from "./src/navigations/AuthNavigator";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,8 +26,20 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        {/* {isAuthenticated ? AuthNavigator : DrawerNavigator } */}
-        <AuthNavigator />
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Login"
+            options={{ headerShown: false }}
+            component={LoginScreen}
+          />
+          <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
+          <Stack.Screen name="Signup User Info" options={{ headerShown: false }} component={SignupUserInfoScreen} />
+          <Stack.Screen
+            name={ROUTES.BOTTOM_TAB}
+            options={{ headerShown: false }}
+            component={BottomTabNavigator}
+          />
+        </Stack.Navigator>
       </NavigationContainer>
     </Provider>
   );
