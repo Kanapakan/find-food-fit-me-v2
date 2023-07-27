@@ -1,12 +1,20 @@
 import { View, Text, Button } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Buttons from '../../components/Buttons'
 import { ROUTES } from '../../constants'
 
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from '@react-native-firebase/firestore';
+import { useSelector } from 'react-redux';
+import { getUserProfile } from '../../store/userSlice';
+// import { getUserProfile } from '../../store/userSlice';
 
 const ProfileScreen = ({ navigation, route }) => {
+  const userData = useSelector(getUserProfile);
+  useEffect(() => {
+    console.log('Profile', userData);
+  }, [])
+  
 
   const handleSignOut = () => {
     auth()

@@ -3,14 +3,14 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
-import { addUserData, getUserData } from '../../store/userDataSlice';
 
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from '@react-native-firebase/firestore';
 import { ROUTES } from '../../constants';
+import { addUserProfile, getUserProfile } from '../../store/userSlice';
 
 const HomeScreen = ({ navigation, route }, props) => {
-  const userData = useSelector(getUserData);
+  const userData = useSelector(getUserProfile);
   const dispatch = useDispatch();
   const [user, setUser] = useState([]);
   const userRef = firestore().collection('Users')
@@ -21,7 +21,10 @@ const HomeScreen = ({ navigation, route }, props) => {
     if (!doc.exists) {
       console.log('No such document!')
     } else {
-      console.log('Document data:', doc.data())
+      // console.log('Document data:', doc.data())
+      dispatch(addUserProfile({
+        userProfile: doc.data()
+      }))
     }
 }
 
