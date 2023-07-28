@@ -22,5 +22,5 @@ export default {
 
     PROFILE: 'My Profile',
     PROFILE_TAB: 'My Profile Tab',
-    CHANGE_USER_DETAIL: 'Change User Detail',
+    CHANGE_USER_Profile: 'Change User Profile',
   };
