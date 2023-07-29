@@ -5,6 +5,7 @@ import COLORS from "../constants/colors";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Input = ({
+  value,
   label,
   iconName,
   error,
@@ -40,6 +41,7 @@ const Input = ({
           style={{ color: COLORS.green, fontSize: 24, marginRight: 10 }}
         />
         <TextInput
+          value={value}
           placeholderTextColor='#B5B5B5'
           autoCorrect={false}
           onFocus={() => {

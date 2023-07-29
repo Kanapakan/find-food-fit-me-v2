@@ -108,6 +108,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
       .set({
         userId: auth().currentUser?.uid,
         email: auth().currentUser?.email,
+        userName: inputs.name,
         gender: inputs.gender,
         age: inputs.age,
         height: inputs.height,

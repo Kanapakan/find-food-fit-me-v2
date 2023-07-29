@@ -43,7 +43,7 @@ const ProfileScreen = ({ navigation, route }) => {
         <View style={{ alignItems: "center", marginTop: -40, }}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("ChangeUserDetail", { userKey: docId })
+              navigation.navigate(ROUTES.CHANGE_USER_PROFILE)
             }}
             style={styles.btnContainer}
           >

@@ -1,4 +1,5 @@
 import { StyleSheet, Platform } from "react-native";
+import { COLORS } from "./src/constants";
 
 export default StyleSheet.create({
   androidSafeArea: {
