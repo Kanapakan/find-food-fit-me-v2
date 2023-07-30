@@ -7,7 +7,7 @@ import firestore from '@react-native-firebase/firestore';
 import Buttons from '../../components/Buttons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import { COLORS } from '../../constants';
+import { COLORS, ROUTES } from '../../constants';
 import Input from '../../components/Inputs';
 import Dropdowns from '../../components/Dropdowns';
 import { Data } from '../../../dataJson/data';
@@ -25,7 +25,8 @@ const ChangeUserProfile = ({ navigation, route }) => {
     activity: userData.userProfile.activity,
 
     email: userData.userProfile.email,
-    password: "",
+    currentPassword: "",
+    newPassword: "",
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
@@ -37,27 +38,27 @@ const ChangeUserProfile = ({ navigation, route }) => {
 
   // -------------------- จัดแถบข้างบน -----------------------------]
 
-  //   let bmr;
-  //   let dailyCalVal;
-  //   let dailyCal;
+  let bmr;
+  let dailyCalVal;
+  let dailyCal;
 
-  //   switch (activity) {
-  //       case "ออกกำลังกายน้อยมาก":
-  //           dailyCalVal = 1.2;
-  //         break;
-  //       case "ออกกำลังกายน้อย":
-  //           dailyCalVal =1.375;
-  //         break;
-  //       case "ออกกำลังกายปานกลาง":
-  //           dailyCalVal = 1.55;
-  //         break;
-  //       case "ออกกำลังกายอย่างหนัก":
-  //           dailyCalVal = 1.725;
-  //         break;
-  //       case "เป็นนักกีฬาหรือใช้แรงงานหนัก":
-  //           dailyCalVal = 1.9;
-  //         break;  
-  //     }
+  switch (inputs.activity) {
+    case "sedentary":
+      dailyCalVal = 1.2;
+      break;
+    case "light excercise":
+      dailyCalVal = 1.375;
+      break;
+    case "moderate exercise":
+      dailyCalVal = 1.55;
+      break;
+    case "heavy exercise":
+      dailyCalVal = 1.725;
+      break;
+    case "athlete":
+      dailyCalVal = 1.9;
+      break;
+  }
 
   //   useEffect(() => {
   //     // console.log("load")
@@ -86,46 +87,45 @@ const ChangeUserProfile = ({ navigation, route }) => {
   //     }, []);
 
 
-  //     //update ข้อมูล
-  //   const updateUser = () => {
-  //     setisLoading(true);
-  //         if(gender == "ชาย"){
-  //             bmr = parseInt((66 + (13.7* weight) + (5 * height) - (6.8 * age)));
-  //             dailyCal = parseInt(bmr*dailyCalVal);              
-  //         } else if(gender == "หญิง") {
-  //             bmr = parseInt((665 + (9.6 * weight) + (1.8 * height) - (4.7 * age)));
-  //             dailyCal = parseInt(bmr*dailyCalVal);
-  //         }
+  //update ข้อมูล
+  const updateUser = async () => {
 
-  //       setisLoading(true);
-  //       const updateDBRef = db.collection('userDetail').doc(userKey);
-  //       updateDBRef.set({
-  //           userId: userId,
-  //           gender: gender,
-  //           email: email,
-  //           age: age,
-  //           height: height,
-  //           weight: weight,
-  //           activity: activity,
-  //           BMR: bmr,
-  //           TDEE: dailyCal
-  //       }).then(() => {
-  //           setKey(''),
-  //           setUserId(''),
-  //           setGender(''),
-  //           setAge(0),
-  //           setHeight(0),
-  //           setWeight(0),
-  //           setActivity(""),
-  //           setisLoading(false)
-  //           Alert.alert("แก้ไขข้อมูลส่วนตัวสำเร็จ")
-  //           navigation.navigate('MyProfile');
-  //       })
-  //       .catch((err) => {
-  //           console.log("Error:", err),
-  //           setisLoading(false)
-  //       })
-  // }
+    setisLoading(true);
+    if (inputs.gender === "male") {
+      bmr = parseInt(
+        66 + 13.7 * inputs.weight + 5 * inputs.height - 6.8 * inputs.age
+      );
+      dailyCal = parseInt(bmr * dailyCalVal);
+    } else if (inputs.gender === "female") {
+      bmr = parseInt(
+        665 + 9.6 * inputs.weight + 1.8 * inputs.height - 4.7 * inputs.age
+      );
+      dailyCal = parseInt(bmr * dailyCalVal);
+    }
+
+    await firestore()
+      .collection('Users')
+      .doc(auth().currentUser?.uid)
+      .set({
+        // userId: auth().currentUser?.uid,
+        // email: auth().currentUser?.email,
+        gender: inputs.gender,
+        age: inputs.age,
+        height: inputs.height,
+        weight: inputs.weight,
+        activity: inputs.activity,
+        BMR: bmr,
+        TDEE: dailyCal,
+      }, { merge: true }).then(() => {
+        Alert.alert("Personal information updated successfully.")
+        navigation.navigate(ROUTES.PROFILE);
+        setisLoading(false);
+      })
+      .catch((err) => {
+        console.log("Error:", err)
+        setisLoading(false)
+      })
+  }
 
 
   // ----------- แก้ไขรหัสผ่าน -----------
@@ -182,10 +182,10 @@ const ChangeUserProfile = ({ navigation, route }) => {
     Keyboard.dismiss();
     let isValid = true;
 
-    if (!inputs.name) {
-      handleError("Please input username", "name");
-      isValid = false;
-    }
+    // if (!inputs.name) {
+    //   handleError("Please input username", "name");
+    //   isValid = false;
+    // }
 
     if (!inputs.gender) {
       handleError("Please select gender", "gender");
@@ -216,7 +216,7 @@ const ChangeUserProfile = ({ navigation, route }) => {
     }
 
     if (isValid) {
-      // createProfile();
+      updateUser();
     }
   };
 
@@ -224,26 +224,26 @@ const ChangeUserProfile = ({ navigation, route }) => {
     Keyboard.dismiss();
     let isValid = true;
 
-    if (!inputs.email) {
-      handleError("Please input email", "email");
+    if (!inputs.currentPassword) {
+      handleError("Please input current password", "currentPassword");
       isValid = false;
-    } else if (!inputs.email.match(/\S+@\S+\.\S+/)) {
-      handleError("Please input a valid email", "email");
+    } else if (inputs.currentPassword.length < 6) {
+      handleError("Min password length of 6", "currentPassword");
       isValid = false;
     }
 
-    if (!inputs.password) {
-      handleError("Please input password", "password");
+    if (!inputs.newPassword) {
+      handleError("Please input new password", "newPassword");
       isValid = false;
-    } else if (inputs.password.length < 6) {
-      handleError("Min password length of 6", "password");
+    } else if (inputs.newPassword.length < 6) {
+      handleError("Min password length of 6", "newPassword");
       isValid = false;
     }
 
     if (!inputs.confirmPassword) {
       handleError("Please input confirmation password", "confirmPassword");
       isValid = false;
-    } else if (inputs.confirmPassword !== inputs.password) {
+    } else if (inputs.confirmPassword !== inputs.newPassword) {
       handleError(
         "Password and confirmation password don't match",
         "confirmPassword"
@@ -296,7 +296,7 @@ const ChangeUserProfile = ({ navigation, route }) => {
                   justifyContent: "center",
                   alignItems: "center",
                   borderBottomWidth: 3,
-                  borderBottomColor: showTab1 == false ? "#547F53" : "#fff",
+                  borderBottomColor: showTab1 == false ? COLORS.darkGreen : "#fff",
                   backgroundColor: "#fff",
                 }}
                 onPress={() => setShowTab1(false)}
@@ -375,54 +375,55 @@ const ChangeUserProfile = ({ navigation, route }) => {
 
               :
 
-                /* ----------------------- Tab 2 -------------------------------------- */
+              /* ----------------------- Tab 2 -------------------------------------- */
               <View className="flex-1 mt-5">
                 <View className="items-center" behavior="padding">
-              <Input
-              value={inputs.email}
-                onChangeText={(text) => handleOnchange(text, "email")}
-                onFocus={() => handleError(null, "email")}
-                iconName="email-outline"
-                label="Email"
-                placeholder="Enter your email address"
-                keyboardType="email-address"
-                error={errors.email}
-              />
-              <Input
-                onChangeText={(text) => handleOnchange(text, "password")}
-                onFocus={() => handleError(null, "password")}
-                iconName="lock-outline"
-                label="Current password"
-                placeholder="Enter your current password"
-                error={errors.password}
-                password
-              />
-               <Input
-                onChangeText={(text) => handleOnchange(text, "confirmPassword")}
-                onFocus={() => handleError(null, "confirmPassword")}
-                iconName="lock-outline"
-                label="New Password"
-                placeholder="At least 6 characters"
-                error={errors.confirmPassword}
-                confirmPassword
-              />
-              <Input
-                onChangeText={(text) => handleOnchange(text, "confirmPassword")}
-                onFocus={() => handleError(null, "confirmPassword")}
-                iconName="lock-outline"
-                label="Confirm Password"
-                placeholder="At least 6 characters"
-                error={errors.confirmPassword}
-                confirmPassword
-              />
-              <Pressable className="self-start ml-5 mt-10"
-                // onPress={''}
-              >
-                <Text className="text-lg font-semibold font-]">Forgot password ?</Text>
-              </Pressable>
-            </View>
+                  <Input
+                    value={inputs.email}
+                    isDisabled={true}
+                    onChangeText={(text) => handleOnchange(text, "email")}
+                    onFocus={() => handleError(null, "email")}
+                    iconName="email-outline"
+                    label="Email"
+                    placeholder="Enter your email address"
+                    keyboardType="email-address"
+                    error={errors.email}
+                  />
+                  <Input
+                    onChangeText={(text) => handleOnchange(text, "currentPassword")}
+                    onFocus={() => handleError(null, "currentPassword")}
+                    iconName="lock-outline"
+                    label="Current password"
+                    placeholder="Enter your current password"
+                    error={errors.currentPassword}
+                    password
+                  />
+                  <Input
+                    onChangeText={(text) => handleOnchange(text, "newPassword")}
+                    onFocus={() => handleError(null, "newPassword")}
+                    iconName="lock-outline"
+                    label="New Password"
+                    placeholder="At least 6 characters"
+                    error={errors.newPassword}
+                    password
+                  />
+                  <Input
+                    onChangeText={(text) => handleOnchange(text, "confirmPassword")}
+                    onFocus={() => handleError(null, "confirmPassword")}
+                    iconName="lock-outline"
+                    label="Confirm Password"
+                    placeholder="At least 6 characters"
+                    error={errors.confirmPassword}
+                    confirmPassword
+                  />
+                  <Pressable className="self-start ml-5 mt-10"
+                  // onPress={''}
+                  >
+                    <Text className="text-lg font-semibold font-]">Forgot password ?</Text>
+                  </Pressable>
+                </View>
                 <View style={{ alignItems: "center", marginTop: 30, }}>
-                  <Buttons text={'Change password'} action={validateAccountInfo}/>
+                  <Buttons text={'Change password'} action={validateAccountInfo} />
                 </View>
               </View>
             }

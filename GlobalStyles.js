@@ -18,6 +18,17 @@ export default StyleSheet.create({
     textAlign: "center",
   },
 
+  inputContailnerDisable: {
+    backgroundColor: COLORS.lightGrey,
+    width: "90%",
+    height: 55,
+    borderWidth: 2,
+    borderRadius: 10,
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    textAlign: "center",
+  },
+
   btnContainer: {
     width: "90%",
     height: 55,

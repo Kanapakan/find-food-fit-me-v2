@@ -12,22 +12,23 @@ import { addUserProfile, getUserProfile } from '../../store/userSlice';
 const HomeScreen = ({ navigation, route }, props) => {
   const userData = useSelector(getUserProfile);
   const dispatch = useDispatch();
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState(null);
   const userRef = firestore().collection('Users')
-  useEffect(() => {
-    //Get user detail from collection
-    const getuser = async () => {
-    const doc = await userRef.doc(auth().currentUser?.uid).get()
-    if (!doc.exists) {
-      console.log('No such document!')
-    } else {
-      // console.log('Document data:', doc.data())
-      dispatch(addUserProfile({
-        userProfile: doc.data()
-      }))
-    }
-}
+  
+  const getuser = () => {
+    const unsub = userRef.doc(auth().currentUser?.uid).onSnapshot(docSnapshot => {
+      if (!docSnapshot.exists) {
+        console.log('No matching documents.')
+        return
+      } else {
+        dispatch(addUserProfile({
+          userProfile: docSnapshot.data()
+        }))
+      }
+    })
+  }
 
+  useEffect(() => {
     getuser()
   }, [])
 

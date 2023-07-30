@@ -116,7 +116,6 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
         activity: inputs.activity,
         BMR: bmr,
         TDEE: dailyCal,
-
       })
       .then(() => {
         console.log('User added!');

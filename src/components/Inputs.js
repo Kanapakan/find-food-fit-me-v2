@@ -5,6 +5,7 @@ import COLORS from "../constants/colors";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Input = ({
+  isDisabled = false,
   value,
   label,
   iconName,
@@ -25,7 +26,7 @@ const Input = ({
       <Text style={style.label}>{label}</Text>
       <View
         style={[
-          GlobalStyles.inputContailner,
+          !isDisabled ? GlobalStyles.inputContailner : GlobalStyles.inputContailnerDisable,
           {
             borderColor: error
               ? COLORS.red
@@ -41,6 +42,7 @@ const Input = ({
           style={{ color: COLORS.green, fontSize: 24, marginRight: 10 }}
         />
         <TextInput
+          editable={!isDisabled}
           value={value}
           placeholderTextColor='#B5B5B5'
           autoCorrect={false}

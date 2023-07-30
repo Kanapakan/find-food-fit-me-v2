@@ -10,11 +10,11 @@ import { getUserProfile } from '../../store/userSlice';
 // import { getUserProfile } from '../../store/userSlice';
 
 const ProfileScreen = ({ navigation, route }) => {
-  const userData = useSelector(getUserProfile);
+  const userData = useSelector(getUserProfile)
   const [userProfile, setUserProfile] = useState(userData.userProfile)
   useEffect(() => {
-    console.log('Profile', userData.userProfile);
-  }, [])
+    setUserProfile(userData.userProfile);
+  }, [userData])
 
 
   // const handleSignOut = () => {
@@ -36,7 +36,7 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
 
         <View style={{ alignItems: "center" }}>
-          <Image style={styles.profile} source={((userProfile.gender === 'female') ? require("../../../assets/Eyes-amico-removebg.png") : require("../../../assets/Eyes-pana-removebg.png"))} />
+          <Image style={styles.profile} source={((userProfile?.gender === 'female') ? require("../../../assets/Eyes-amico-removebg.png") : require("../../../assets/Eyes-pana-removebg.png"))} />
         </View>
 
 
@@ -55,54 +55,54 @@ const ProfileScreen = ({ navigation, route }) => {
 
       <View className="flex-[3.5] flex-col bg-white">
         <View className="flex-[5] flex-row mt-1 mb-4">
-          <View className="flex-[2] flex-col justify-around">
+          <View className="flex-[2.3] flex-col justify-around">
             <View className="flex flex-row justify-between">
-              <Text className="self-center text-lg ml-5">Gender</Text>
+              <Text className="self-center text-sm ml-4">Gender</Text>
               <View style={styles.btnContainerAll}>
-                <Text style={styles.btnTextAll2}>{userProfile.gender.charAt(0).toUpperCase() + userProfile.gender.slice(1)}</Text>
+                <Text style={styles.btnTextAll2}>{userProfile?.gender.charAt(0).toUpperCase() + userProfile?.gender.slice(1)}</Text>
               </View>
             </View>
 
             <View className="flex flex-row justify-between">
-              <Text className="self-center text-lg ml-5">Age</Text>
+              <Text className="self-center text-sm ml-4">Age</Text>
               <View style={styles.btnContainerAll}>
-                <Text style={styles.btnTextAll2}>{userProfile.age}</Text>
+                <Text style={styles.btnTextAll2}>{userProfile?.age}</Text>
               </View>
             </View>
 
             <View className="flex flex-row justify-between">
-              <Text className="self-center text-sm ml-5">Weight (Kg.)</Text>
+              <Text className="self-center text-sm ml-4">Weight (Kg.)</Text>
               <View style={styles.btnContainerAll}>
-                <Text style={styles.btnTextAll2}>{userProfile.weight}</Text>
+                <Text style={styles.btnTextAll2}>{userProfile?.weight}</Text>
               </View>
             </View>
 
             <View className="flex flex-row justify-between">
-              <Text className="self-center text-sm ml-5">Height (Cm.)</Text>
+              <Text className="self-center text-sm ml-4">Height (Cm.)</Text>
               <View style={styles.btnContainerAll}>
-                <Text style={styles.btnTextAll2}>{userProfile.height}</Text>
+                <Text style={styles.btnTextAll2}>{userProfile?.height}</Text>
               </View>
             </View>
           </View>
 
-          <View className="flex-[2] justify-center items-center">
+          <View className="flex-[1.85] justify-center items-end pr-1">
             <View style={styles.circle}>
               <Text className="font-bold text-md self-center mt-2">Total daily</Text>
               <Text className="text-sm self-center">(energy expenditure)</Text>
-              <Text className="font-bold text-2xl self-center text-[#8EC18D] mt-1">{userProfile.TDEE}</Text>
+              <Text className="font-bold text-2xl self-center text-[#8EC18D] mt-1">{userProfile?.TDEE}</Text>
               <Text className="text-sm self-center">calories per day</Text>
               <Text className="font-semibold self-center mt-3">BMR.</Text>
               <Text className="font-bold text-lg self-center text-[#8EC18D]"
-              >{userProfile.BMR} Cals</Text>
+              >{userProfile?.BMR} Cals</Text>
             </View>
           </View>
 
         </View>
         <View className="flex-1">
           <View className="flex flex-row">
-            <Text className="self-center text-lg ml-5 mr-10 ">Activity</Text>
+            <Text className="self-center text-sm ml-4 mr-12 ">Activity</Text>
             <View style={styles.btnContainerAll2}>
-              <Text style={styles.btnTextAll2}>{userProfile.activity.charAt(0).toUpperCase() + userProfile.activity.slice(1)}</Text>
+              <Text style={styles.btnTextAll2}>{userProfile?.activity.charAt(0).toUpperCase() + userProfile.activity.slice(1)}</Text>
             </View>
           </View>
         </View>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     width: 110
   },
   btnContainer: {
-    width: "35%",
+    width: "40%",
     elevation: 8,
     backgroundColor: "#cecece",
     borderRadius: 10,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     margin: 30,
   },
   btnContainerAll: {
-    width: "40%",
+    width: "50%",
     // marginTop: -65,
     // marginLeft: 120,
     borderColor: COLORS.green,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
 
   },
   btnTextAll2: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#fff",
     alignSelf: "center",
     color: COLORS.black,
