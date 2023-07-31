@@ -13,6 +13,7 @@ import Dropdowns from '../../components/Dropdowns';
 import { Data } from '../../../dataJson/data';
 import { getUserProfile } from '../../store/userSlice';
 import { useSelector } from 'react-redux';
+import Loader from '../../components/Loader';
 
 const ChangeUserProfile = ({ navigation, route }) => {
   const userData = useSelector(getUserProfile);
@@ -32,7 +33,7 @@ const ChangeUserProfile = ({ navigation, route }) => {
   const [errors, setErrors] = useState({});
   const [key, setKey] = useState("");
   const [newPassword, setNewPassword] = useState('')
-  const [isLoading, setisLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   // const userKey = route.params.userKey;
   const [showTab1, setShowTab1] = useState(true);
 
@@ -60,37 +61,10 @@ const ChangeUserProfile = ({ navigation, route }) => {
       break;
   }
 
-  //   useEffect(() => {
-  //     // console.log("load")
-
-  //       const dbRef = db.collection('userDetail').doc(userKey);
-
-  //       dbRef.get().then((res) => {
-  //           //check ว่ามีข้อมูลอยู่ใน Doc ไหม
-  //           if (res.exists){
-  //             //ดึงค่าออกมาจาก firebase
-  //               const user = res.data();
-  //               setKey(res.id),
-  //               setUserId(user.userId),
-  //               setEmail(user.email),
-  //               setGender(user.gender),
-  //               setAge(user.age),
-  //               setHeight(user.height),
-  //               setWeight(user.weight),
-  //               setActivity(user.activity),
-  //               setisLoading(false)
-  //           } else {
-  //               console.log('Document does not exist!');
-  //           }
-  //       })
-
-  //     }, []);
-
-
   //update ข้อมูล
   const updateUser = async () => {
 
-    setisLoading(true);
+    setIsLoading(true);
     if (inputs.gender === "male") {
       bmr = parseInt(
         66 + 13.7 * inputs.weight + 5 * inputs.height - 6.8 * inputs.age
@@ -119,99 +93,84 @@ const ChangeUserProfile = ({ navigation, route }) => {
       }, { merge: true }).then(() => {
         Alert.alert("Personal information updated successfully.")
         navigation.navigate(ROUTES.PROFILE);
-        setisLoading(false);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.log("Error:", err)
-        setisLoading(false)
+        setIsLoading(false)
       })
   }
 
 
-  // ----------- แก้ไขรหัสผ่าน -----------
-  // const reauthrnticate = (currentPass) =>{
-  //    const user = firebase.auth().currentUser;
-  //     const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
-  //     // console.log(cred)
-  //     return user.reauthenticateWithCredential(cred);
-  // }
+  // ----------- change password -----------
+  const reauthenticateAndChangePassword = async (currentPassword, newPassword) => {
+    setIsLoading(true);
+    const user = auth().currentUser;
+    const credentials = auth.EmailAuthProvider.credential(user.email, currentPassword);
 
+    if (user) {
+      user.reauthenticateWithCredential(credentials)
+        .then(() => {
+          user.updatePassword(newPassword)
+            .then(() => {
+              setIsLoading(false);
+              Alert.alert("Your password has been changed successfully.")
+              navigation.navigate(ROUTES.PROFILE);
+            })
+            .catch((e) => {
+              setIsLoading(false);
+              Alert.alert("Error updating password, Please try again.")
+            });
+        })
+        .catch((e) => {
+          setIsLoading(false);
+          console.log('Error reauthenticating:', e.message);
+          if (e.code === 'auth/wrong-password') {
+            handleError("The password you entered is incorrect.", "currentPassword");
+          }
+        });
+    } else {
+      setIsLoading(false);
+      console.log('No user signed in.');
+    }
 
-  //   const updatePassword = (oldPassword, newPassword) => {
-  //     setisLoading(true);
-  //     reauthrnticate(oldPassword)
-  //     .then(() => {
-  //       const user = firebase.auth().currentUser;
-  //       user.updatePassword(newPassword)
-  //       .then(() => {
-  //         setisLoading(false)
-  //         Alert.alert("เปลี่ยนรหัสผ่านสำเร็จ")
-  //           console.log("Edit Password success!");
-  //           navigation.navigate('MyProfile');
-  //     })
-  //     .then(() => {
-  //         setOldPassword("");
-  //         setNewPassword("");
-  //         setConfirmPassword("");
-  //     })
+  }
 
-
-  //   })
-  //   .catch((err) => {
-  //     Alert.alert("รหัสผ่านเก่าไม่ถูกต้อง")
-  //     setisLoading(false)
-  //     console.log("Error:", err)
-  //     setOldPassword("");
-  //     setNewPassword("");
-  //     setConfirmPassword("");
-  // })
-
-  // }
-
-
-  //   if (isLoading) {
-  //     return (
-  //         <View style={styles.preloader}>
-  //             <ActivityIndicator size="large" color="#547F53" />
-  //             <Text>กรุณารอสักครู่</Text>
-  //         </View>
-  //     )
-  // }
 
   const validateUserInfo = () => {
     Keyboard.dismiss();
     let isValid = true;
 
     // if (!inputs.name) {
-    //   handleError("Please input username", "name");
+    //   handleError("Please input username.", "name");
     //   isValid = false;
     // }
 
     if (!inputs.gender) {
-      handleError("Please select gender", "gender");
+      handleError("Please select gender.", "gender");
       isValid = false;
     }
 
     if (!inputs.age) {
-      handleError("Please input age", "age");
+      handleError("Please input age.", "age");
       isValid = false;
     } else if (inputs.age < 18 || inputs.age > 80) {
-      handleError("Please input age between 18-80 years", "age");
+      handleError("Please input age between 18-80 years.", "age");
       isValid = false;
     }
 
     if (!inputs.height) {
-      handleError("Please input height", "height");
+      handleError("Please input height.", "height");
       isValid = false;
     }
 
     if (!inputs.weight) {
-      handleError("Please input weight", "weight");
+      handleError("Please input weight.", "weight");
       isValid = false;
     }
 
     if (!inputs.activity) {
-      handleError("Please select activity", "activity");
+      handleError("Please select activity.", "activity");
       isValid = false;
     }
 
@@ -225,34 +184,34 @@ const ChangeUserProfile = ({ navigation, route }) => {
     let isValid = true;
 
     if (!inputs.currentPassword) {
-      handleError("Please input current password", "currentPassword");
+      handleError("Please input current password.", "currentPassword");
       isValid = false;
     } else if (inputs.currentPassword.length < 6) {
-      handleError("Min password length of 6", "currentPassword");
+      handleError("Min password length of 6.", "currentPassword");
       isValid = false;
     }
 
     if (!inputs.newPassword) {
-      handleError("Please input new password", "newPassword");
+      handleError("Please input new password.", "newPassword");
       isValid = false;
     } else if (inputs.newPassword.length < 6) {
-      handleError("Min password length of 6", "newPassword");
+      handleError("Min password length of 6.", "newPassword");
       isValid = false;
     }
 
     if (!inputs.confirmPassword) {
-      handleError("Please input confirmation password", "confirmPassword");
+      handleError("Please input confirmation password.", "confirmPassword");
       isValid = false;
     } else if (inputs.confirmPassword !== inputs.newPassword) {
       handleError(
-        "Password and confirmation password don't match",
+        "Password and confirmation password don't match.",
         "confirmPassword"
       );
       isValid = false;
     }
 
     if (isValid) {
-      // createProfile();
+      reauthenticateAndChangePassword(inputs.currentPassword, inputs.newPassword)
     }
   }
 
@@ -262,6 +221,12 @@ const ChangeUserProfile = ({ navigation, route }) => {
   const handleError = (error, input) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
+
+  if (isLoading) {
+    return (
+      <Loader />
+    )
+  }
 
   return (
     <TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>

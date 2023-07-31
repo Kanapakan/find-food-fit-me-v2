@@ -33,10 +33,13 @@ const LoginScreen = ({navigation, route}) => {
   const userRef = firestore().collection('Users')
 
   const checkUserExist = async () => {
+    setisLoading(true);
     const doc = await userRef.doc(auth().currentUser?.uid).get()
     if (!doc.exists) {
+      setisLoading(false);
       navigation.navigate(ROUTES.SIGNUP_USER_INFO);
     } else {
+      setisLoading(false);
       navigation.navigate(ROUTES.BOTTOM_TAB);
     }
   }
@@ -80,18 +83,18 @@ const LoginScreen = ({navigation, route}) => {
     let isValid = true;
 
     if (!inputs.email) {
-      handleError("Please input email", "email");
+      handleError("Please input email.", "email");
       isValid = false;
     } else if (!inputs.email.match(/\S+@\S+\.\S+/)) {
-      handleError("Please input a valid email", "email");
+      handleError("Please input a valid email.", "email");
       isValid = false;
     }
 
     if (!inputs.password) {
-      handleError("Please input password", "password");
+      handleError("Please input password.", "password");
       isValid = false;
     } else if (inputs.password.length < 6) {
-      handleError("Min password length of 6", "password");
+      handleError("Min password length of 6.", "password");
       isValid = false;
     }
 

@@ -130,35 +130,35 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
     let isValid = true;
 
     if (!inputs.name) {
-      handleError("Please input username", "name");
+      handleError("Please input username.", "name");
       isValid = false;
     }
 
     if (!inputs.gender) {
-      handleError("Please select gender", "gender");
+      handleError("Please select gender.", "gender");
       isValid = false;
     }
 
     if (!inputs.age) {
-      handleError("Please input age", "age");
+      handleError("Please input age.", "age");
       isValid = false;
     } else if (inputs.age < 18 || inputs.age > 80) {
-      handleError("Please input age between 18-80 years", "age");
+      handleError("Please input age between 18-80 years.", "age");
       isValid = false;
     }
 
     if (!inputs.height) {
-      handleError("Please input height", "height");
+      handleError("Please input height.", "height");
       isValid = false;
     }
 
     if (!inputs.weight) {
-      handleError("Please input weight", "weight");
+      handleError("Please input weight.", "weight");
       isValid = false;
     }
 
     if (!inputs.activity) {
-      handleError("Please select activity", "activity");
+      handleError("Please select activity.", "activity");
       isValid = false;
     }
 

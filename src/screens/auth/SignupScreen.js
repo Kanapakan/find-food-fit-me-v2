@@ -56,7 +56,7 @@ const SignUpScreen = ({ navigation, route }) => {
         .catch((e) => {
         if (e.code === 'auth/email-already-in-use') {
           // Email is already in use
-          handleError("The email address is already in use", "email");
+          handleError("The email address is already in use.", "email");
           
         } else {
           console.error('Error signing up:', e);
@@ -70,27 +70,27 @@ const SignUpScreen = ({ navigation, route }) => {
     let isValid = true;
 
     if (!inputs.email) {
-      handleError("Please input email", "email");
+      handleError("Please input email.", "email");
       isValid = false;
     } else if (!inputs.email.match(/\S+@\S+\.\S+/)) {
-      handleError("Please input a valid email", "email");
+      handleError("Please input a valid email.", "email");
       isValid = false;
     }
 
     if (!inputs.password) {
-      handleError("Please input password", "password");
+      handleError("Please input password.", "password");
       isValid = false;
     } else if (inputs.password.length < 6) {
-      handleError("Min password length of 6", "password");
+      handleError("Min password length of 6.", "password");
       isValid = false;
     }
 
     if (!inputs.confirmPassword) {
-      handleError("Please input confirmation password", "confirmPassword");
+      handleError("Please input confirmation password.", "confirmPassword");
       isValid = false;
     } else if (inputs.confirmPassword !== inputs.password) {
       handleError(
-        "Password and confirmation password don't match",
+        "Password and confirmation password don't match.",
         "confirmPassword"
       );
       isValid = false;

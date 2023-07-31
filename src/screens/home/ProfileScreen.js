@@ -17,14 +17,14 @@ const ProfileScreen = ({ navigation, route }) => {
   }, [userData])
 
 
-  // const handleSignOut = () => {
-  //   auth()
-  //     .signOut()
-  //     .then(() => {
-  //       navigation.navigate(ROUTES.LOGIN)
-  //     })
-  //     .catch(error => alert(error.message))
-  // }
+  const handleSignOut = () => {
+    auth()
+      .signOut()
+      .then(() => {
+        navigation.navigate(ROUTES.LOGIN)
+      })
+      .catch(error => alert(error.message))
+  }
 
   return (
     <View className="flex-1 flex-col bg-[#E4EFE3]">
@@ -109,7 +109,7 @@ const ProfileScreen = ({ navigation, route }) => {
       </View>
 
       <View className="items-center pb-3 bg-white" >
-        <Buttons text={'Log out'} />
+        <Buttons text={'Log out'} action={handleSignOut} />
       </View>
     </View>
   );
