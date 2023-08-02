@@ -30,7 +30,7 @@ export default StyleSheet.create({
   },
 
   btnContainer: {
-    width: "90%",
+    // width: "90%",
     height: 55,
     backgroundColor: "#8ec18d",
     borderColor: "#8ec18d",

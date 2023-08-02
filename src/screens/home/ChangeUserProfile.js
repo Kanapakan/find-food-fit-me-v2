@@ -14,6 +14,9 @@ import { Data } from '../../../dataJson/data';
 import { getUserProfile } from '../../store/userSlice';
 import { useSelector } from 'react-redux';
 import Loader from '../../components/Loader';
+import PersonalInfo from './PersonalInfo';
+import AccountInfo from './AccountInfo';
+import TopTab from '../../components/TopTab';
 
 const ChangeUserProfile = ({ navigation, route }) => {
   const userData = useSelector(getUserProfile);
@@ -31,13 +34,8 @@ const ChangeUserProfile = ({ navigation, route }) => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
-  const [key, setKey] = useState("");
-  const [newPassword, setNewPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false);
-  // const userKey = route.params.userKey;
-  const [showTab1, setShowTab1] = useState(true);
-
-  // -------------------- จัดแถบข้างบน -----------------------------]
+  const [showTab, setShowTab] = useState(true);
 
   let bmr;
   let dailyCalVal;
@@ -81,8 +79,6 @@ const ChangeUserProfile = ({ navigation, route }) => {
       .collection('Users')
       .doc(auth().currentUser?.uid)
       .set({
-        // userId: auth().currentUser?.uid,
-        // email: auth().currentUser?.email,
         gender: inputs.gender,
         age: inputs.age,
         height: inputs.height,
@@ -234,163 +230,36 @@ const ChangeUserProfile = ({ navigation, route }) => {
         <ScrollView>
           <KeyboardAwareScrollView>
             <View className="flex-row relative h-16">
-              {/* ----------------------- Tab1 --------------------------------- */}
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderBottomWidth: 3,
-                  borderBottomColor: showTab1 === true ? "#547F53" : "#fff",
-                }}
-                onPress={() => setShowTab1(true)}
-              >
-                <Text
-                  style={{
-                    color: showTab1 === true ? "#000" : "#adacac",
-                    fontWeight: showTab1 === true ? "bold" : "normal",
-                    fontSize: 16
-                  }}
-                >
-                  Personal information
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderBottomWidth: 3,
-                  borderBottomColor: showTab1 == false ? COLORS.darkGreen : "#fff",
-                  backgroundColor: "#fff",
-                }}
-                onPress={() => setShowTab1(false)}
-
-              >
-                <Text
-                  style={{
-                    color: showTab1 === true ? "#adacac" : "#000",
-                    fontWeight: showTab1 === true ? "normal" : "bold",
-                    fontSize: 16
-                  }}
-                >
-                  Account information
-                </Text>
-              </TouchableOpacity>
+              <TopTab
+                tabTitle={"Personal Information"}
+                showTab={showTab}
+                setshowTab={setShowTab}
+                onPress={() => setShowTab(true)}
+              />
+              <TopTab
+                tabTitle={"Account Information"}
+                showTab={!showTab}
+                setshowTab={setShowTab}
+                onPress={() => setShowTab(false)}
+              />
             </View>
-            {showTab1 ?
-              <View>
-                <View className="items-center pt-7">
 
-                  {/* ----------------------- Tab1 --------------------------------- */}
-
-                  <Dropdowns
-                    value={inputs.gender}
-                    headLabel="Gender"
-                    onFocus={() => handleError(null, "gender")}
-                    data={Data.gender}
-                    dataType="gender"
-                    handleOnchange={handleOnchange}
-                    error={errors.gender}
-                  />
-
-                  <Input
-                    value={inputs.age}
-                    onChangeText={(text) => handleOnchange(text, "age")}
-                    onFocus={() => handleError(null, "age")}
-                    label="Age (years)"
-                    placeholder="Enter your age (ages 18-80 years)"
-                    keyboardType="number-pad"
-                    error={errors.age}
-                  />
-
-                  <Input
-                    value={inputs.height}
-                    onChangeText={(text) => handleOnchange(text, "height")}
-                    onFocus={() => handleError(null, "height")}
-                    label="Height (cm)"
-                    placeholder="Enter your current height"
-                    keyboardType="decimal-pad"
-                    error={errors.height}
-                  />
-
-                  <Input
-                    value={inputs.weight}
-                    onChangeText={(text) => handleOnchange(text, "weight")}
-                    onFocus={() => handleError(null, "weight")}
-                    label="Weight (kg)"
-                    placeholder="Enter your current weight"
-                    keyboardType="decimal-pad"
-                    error={errors.weight}
-                  />
-                  <Dropdowns
-                    value={inputs.activity}
-                    headLabel="Activity"
-                    onFocus={() => handleError(null, "activity")}
-                    data={Data.activity}
-                    dataType="activity"
-                    handleOnchange={handleOnchange}
-                    error={errors.activity}
-                  />
-                </View>
-                <View style={{ alignItems: "center", marginTop: 30, }}>
-                  <Buttons text="Save" action={validateUserInfo} />
-                </View>
-              </View>
-
+            {showTab ?
+              <PersonalInfo
+                inputs={inputs}
+                handleOnchange={handleOnchange}
+                handleError={handleError}
+                validateUserInfo={validateUserInfo}
+                errors={errors}
+              />
               :
-
-              /* ----------------------- Tab 2 -------------------------------------- */
-              <View className="flex-1 mt-5">
-                <View className="items-center" behavior="padding">
-                  <Input
-                    value={inputs.email}
-                    isDisabled={true}
-                    onChangeText={(text) => handleOnchange(text, "email")}
-                    onFocus={() => handleError(null, "email")}
-                    iconName="email-outline"
-                    label="Email"
-                    placeholder="Enter your email address"
-                    keyboardType="email-address"
-                    error={errors.email}
-                  />
-                  <Input
-                    onChangeText={(text) => handleOnchange(text, "currentPassword")}
-                    onFocus={() => handleError(null, "currentPassword")}
-                    iconName="lock-outline"
-                    label="Current password"
-                    placeholder="Enter your current password"
-                    error={errors.currentPassword}
-                    password
-                  />
-                  <Input
-                    onChangeText={(text) => handleOnchange(text, "newPassword")}
-                    onFocus={() => handleError(null, "newPassword")}
-                    iconName="lock-outline"
-                    label="New Password"
-                    placeholder="At least 6 characters"
-                    error={errors.newPassword}
-                    password
-                  />
-                  <Input
-                    onChangeText={(text) => handleOnchange(text, "confirmPassword")}
-                    onFocus={() => handleError(null, "confirmPassword")}
-                    iconName="lock-outline"
-                    label="Confirm Password"
-                    placeholder="At least 6 characters"
-                    error={errors.confirmPassword}
-                    confirmPassword
-                  />
-                  <Pressable className="self-start ml-5 mt-10"
-                  // onPress={''}
-                  >
-                    <Text className="text-lg font-semibold font-]">Forgot password ?</Text>
-                  </Pressable>
-                </View>
-                <View style={{ alignItems: "center", marginTop: 30, }}>
-                  <Buttons text={'Change password'} action={validateAccountInfo} />
-                </View>
-              </View>
+              <AccountInfo
+                inputs={inputs}
+                handleOnchange={handleOnchange}
+                handleError={handleError}
+                validateAccountInfo={validateAccountInfo}
+                errors={errors}
+              />
             }
           </KeyboardAwareScrollView>
         </ScrollView>

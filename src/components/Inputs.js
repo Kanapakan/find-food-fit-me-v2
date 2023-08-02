@@ -12,6 +12,7 @@ const Input = ({
   error,
   password,
   confirmPassword,
+  searchRecipe,
   keyboardType,
   userInfo,
   onFocus = () => {},
@@ -19,6 +20,7 @@ const Input = ({
 }) => {
   const [hidePassword, setHidePassword] = useState(password);
   const [hideConfirmPassword, setHideConfirmPassword] = useState(confirmPassword);
+  const [clearText, setClearText] = useState(searchRecipe);
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -32,16 +34,17 @@ const Input = ({
               ? COLORS.red
               : isFocused
               ? COLORS.green
-              : COLORS.light,
+              : COLORS.lightGreen,
             alignItems: "center",
           },
         ]}
       >
-        <Icon
+        {iconName && <Icon
           name={iconName}
           style={{ color: COLORS.green, fontSize: 24, marginRight: 10 }}
-        />
+        />}
         <TextInput
+          className="m-0"
           editable={!isDisabled}
           value={value}
           placeholderTextColor='#B5B5B5'
@@ -59,7 +62,7 @@ const Input = ({
               ? hideConfirmPassword
               : false
           }
-          style={{ color: COLORS.darkBlue, flex: 1 }}
+          style={{ color: COLORS.black, flex: 1 }}
           {...props}
         />
         {password && (
@@ -74,6 +77,12 @@ const Input = ({
             onPress={() => setHideConfirmPassword(!hideConfirmPassword)}
             name={hideConfirmPassword ? "eye-off-outline" : "eye-outline"}
             style={{ color: COLORS.darkBlue, fontSize: 22 }}
+          />
+        )}
+        {searchRecipe && (
+          <Icon
+            name={"close"}
+            style={{ color: COLORS.darkGreen, fontSize: 22 }}
           />
         )}
       </View>

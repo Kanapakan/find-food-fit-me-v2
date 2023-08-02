@@ -27,7 +27,7 @@ const Dropdowns = ({
               ? COLORS.red
               : isFocused
               ? COLORS.green
-              : COLORS.light,
+              : COLORS.lightGreen,
             alignItems: "center",
           },
         ]}
@@ -72,20 +72,20 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 55,
     width: "100%",
-    paddingHorizontal: 5,
+    paddingHorizontal: 15,
   },
   icon: {
-    marginRight: 5,
+    // marginRight: 5,
   },
   placeholderStyle: {
     fontSize: 14,
     color: "#B5B5B5",
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
   },
   selectedTextStyle: {
     fontSize: 14,
     color: COLORS.black,
-    paddingHorizontal: 20,
+    // paddingHorizontal: 15,
   },
   iconStyle: {
     width: 20,

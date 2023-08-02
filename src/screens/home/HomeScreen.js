@@ -38,7 +38,7 @@ const HomeScreen = ({ navigation, route }, props) => {
   // const navigation = useNavigation();
 
   return (
-    <View>
+    <View className="bg-slate-500 flex-1">
       <Text className="text-red-600 mt-4">HomeScreen</Text>
     </View>
   )

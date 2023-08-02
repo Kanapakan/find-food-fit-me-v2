@@ -20,7 +20,7 @@ const SearchNavigator = () => {
     >
       <Stack.Screen
         name={ROUTES.SEARCH_RECIPES}
-        options={{ title: "ค้นหาเมนูอาหาร" }}
+        options={{ title: "Search recipes" }}
         component={SearchScreen}
       />
       {/* <Stack.Screen

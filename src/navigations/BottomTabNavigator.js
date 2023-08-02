@@ -8,6 +8,7 @@ import SearchNavigator from "./SearchNavigator";
 import BookmarkNavigator from "./BookmarkNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import Icon from "react-native-vector-icons/Ionicons";
+import CreateNewRecipeNavigator from "./CreateNewRecipeNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,7 +22,7 @@ const BottomTabNavigator = () => {
       screenOptions={({ route }) => ({
 				headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveBackgroundColor: COLORS.light,
+        tabBarActiveBackgroundColor: COLORS.lightGreen,
         tabBarInactiveTintColor: COLORS.green,
         tabBarStyle: styles.tabBarStyle,
         tabBarActiveTintColor: COLORS.darkGreen,
@@ -32,13 +33,15 @@ const BottomTabNavigator = () => {
             iconName = focused ? "home-sharp" : "home-outline";
           } else if (route.name === ROUTES.SEARCH_RECIPES_TAB) {
             iconName = focused ? "search" : "search-outline";
+          } else if (route.name === ROUTES.CREATE_NEW_RECIPE_TAB) {
+            iconName = focused ? "add-circle" : "add-circle-outline";
           } else if (route.name === ROUTES.BOOKMARK_TAB) {
             iconName = focused ? "bookmarks" : "bookmarks-outline";
           } else if (route.name === ROUTES.PROFILE_TAB) {
             iconName = focused ? "person-sharp" : "person-outline";
           }
 
-          return <Icon name={iconName} size={28} color={color} />;
+          return <Icon name={iconName} size={route.name === ROUTES.CREATE_NEW_RECIPE_TAB ? 34 : 28} color={color} />;
         },
       })}
     >
@@ -46,6 +49,10 @@ const BottomTabNavigator = () => {
       <Tab.Screen
         name={ROUTES.SEARCH_RECIPES_TAB}
         component={SearchNavigator}
+      />
+      <Tab.Screen
+        name={ROUTES.CREATE_NEW_RECIPE_TAB}
+        component={CreateNewRecipeNavigator}
       />
       <Tab.Screen name={ROUTES.BOOKMARK_TAB} component={BookmarkNavigator} />
       <Tab.Screen name={ROUTES.PROFILE_TAB} component={ProfileNavigator} />

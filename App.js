@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { HomeScreen, SignupScreen, SignupUserInfoScreen } from "./src/screens";
 // import { TailwindProvider } from "tailwindcss-react-native"
 import LoginScreen from "./src/screens/auth/LoginScreen";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import BottomTabNavigator from "./src/navigations/BottomTabNavigator";
 import { ROUTES } from "./src/constants";
 import { Provider } from "react-redux";
@@ -25,22 +25,24 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Login"
-            options={{ headerShown: false }}
-            component={LoginScreen}
-          />
-          <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} /> 
-          <Stack.Screen name="Signup User Info" options={{ headerShown: false }} component={SignupUserInfoScreen} />
-          <Stack.Screen
-            name={ROUTES.BOTTOM_TAB}
-            options={{ headerShown: false }}
-            component={BottomTabNavigator}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Login"
+              options={{ headerShown: false }}
+              component={LoginScreen}
+            />
+            <Stack.Screen name="Signup" options={{ headerShown: false }} component={SignupScreen} />
+            <Stack.Screen name="Signup User Info" options={{ headerShown: false }} component={SignupUserInfoScreen} />
+            <Stack.Screen
+              name={ROUTES.BOTTOM_TAB}
+              options={{ headerShown: false }}
+              component={BottomTabNavigator}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
     </Provider>
   );
 }

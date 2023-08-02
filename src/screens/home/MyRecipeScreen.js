@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const AddMenuScreen = () => {
+const MyRecipeScreen = () => {
   return (
     <View>
-      <Text>AddMenuScreen</Text>
+      <Text>MyRecipeScreen</Text>
     </View>
   )
 }
 
-export default AddMenuScreen
+export default MyRecipeScreen

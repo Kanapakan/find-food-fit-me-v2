@@ -17,6 +17,9 @@ export default {
     CONFIRM_INGREDIENTS: 'Confirm Ingredients',
     RESULT_RECIPES: 'Result Recipes',
 
+    CREATE_NEW_RECIPE: 'Create New Recipe',
+    CREATE_NEW_RECIPE_TAB: 'Create New Recipe Tab',
+
     BOOKMARK: 'Bookmark',
     BOOKMARK_TAB: 'Bookmark Tab',
 

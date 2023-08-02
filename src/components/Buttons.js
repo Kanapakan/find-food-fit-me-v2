@@ -2,10 +2,11 @@ import { View, Text, Pressable } from "react-native";
 import React from "react";
 import GlobalStyles from "../../GlobalStyles";
 
-const Buttons = ({text, action = () => {}}) => {
+const Buttons = ({text, action = () => {}, width}) => {
   return (
     <Pressable
       // onPress={handleLogin}
+      className={width}
       style={GlobalStyles.btnContainer}
       onPress={
         action
