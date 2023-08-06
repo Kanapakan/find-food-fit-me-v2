@@ -25,9 +25,9 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <Provider store={store}>
-      <SafeAreaProvider>
+      <SafeAreaProvider >
         <NavigationContainer>
-          <Stack.Navigator>
+          <Stack.Navigator >
             <Stack.Screen
               name="Login"
               options={{ headerShown: false }}

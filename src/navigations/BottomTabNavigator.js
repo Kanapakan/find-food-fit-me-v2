@@ -8,7 +8,7 @@ import SearchNavigator from "./SearchNavigator";
 import BookmarkNavigator from "./BookmarkNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import Icon from "react-native-vector-icons/Ionicons";
-import CreateNewRecipeNavigator from "./CreateNewRecipeNavigator";
+import CreateRecipeNavigator from "./CreateRecipeNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -52,7 +52,7 @@ const BottomTabNavigator = () => {
       />
       <Tab.Screen
         name={ROUTES.CREATE_NEW_RECIPE_TAB}
-        component={CreateNewRecipeNavigator}
+        component={CreateRecipeNavigator}
       />
       <Tab.Screen name={ROUTES.BOOKMARK_TAB} component={BookmarkNavigator} />
       <Tab.Screen name={ROUTES.PROFILE_TAB} component={ProfileNavigator} />

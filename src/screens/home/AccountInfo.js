@@ -61,7 +61,7 @@ const AccountInfo = ({
           </Pressable>
         </View>
         <View style={{ alignItems: "center", marginTop: 30, }}>
-          <Buttons width={'w-[90%]'} text={'Change password'} action={validateAccountInfo} />
+          <Buttons width={'w-[90%]'} title={'Change password'} action={validateAccountInfo} />
         </View>
       </View>
     </View>

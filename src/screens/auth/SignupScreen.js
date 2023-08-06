@@ -158,7 +158,7 @@ const SignUpScreen = ({ navigation, route }) => {
             </View>
 
             <View className="items-center flex mt-5">
-            <Buttons text="Sign Up" action={validate}/>
+            <Buttons title="Sign Up" action={validate}/>
             </View>
 
             <View className="self-center pt-5">

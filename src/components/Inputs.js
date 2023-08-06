@@ -15,6 +15,7 @@ const Input = ({
   searchRecipe,
   keyboardType,
   userInfo,
+  index,
   onFocus = () => {},
   ...props
 }) => {
@@ -24,8 +25,8 @@ const Input = ({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={{ marginBottom: 10 }}>
-      <Text style={style.label}>{label}</Text>
+    <View className="mb-3">
+      {label && <Text style={style.label}>{label}</Text>}
       <View
         style={[
           !isDisabled ? GlobalStyles.inputContailner : GlobalStyles.inputContailnerDisable,
@@ -43,6 +44,8 @@ const Input = ({
           name={iconName}
           style={{ color: COLORS.green, fontSize: 24, marginRight: 10 }}
         />}
+        {index && <Text style={{ color: COLORS.darkGreen, fontSize: 16, marginRight: 10 }}>{index+'.'}</Text>}
+        
         <TextInput
           className="m-0"
           editable={!isDisabled}

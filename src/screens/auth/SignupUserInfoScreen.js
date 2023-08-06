@@ -248,7 +248,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
               />
             </View>
             <View className="items-center mt-5 mb-10">
-              <Buttons text="Save" action={validate} />
+              <Buttons title="Save" action={validate} />
             </View>
           </KeyboardAwareScrollView>
         </ScrollView>

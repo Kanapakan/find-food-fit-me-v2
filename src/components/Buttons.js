@@ -2,7 +2,7 @@ import { View, Text, Pressable } from "react-native";
 import React from "react";
 import GlobalStyles from "../../GlobalStyles";
 
-const Buttons = ({text, action = () => {}, width}) => {
+const Buttons = ({title, action = () => {}, width}) => {
   return (
     <Pressable
       // onPress={handleLogin}
@@ -12,7 +12,7 @@ const Buttons = ({text, action = () => {}, width}) => {
         action
       }
     >
-      <Text className="text-lg text-white font-bold">{text}</Text>
+      <Text className="text-lg text-white font-bold">{title}</Text>
     </Pressable>
   );
 };

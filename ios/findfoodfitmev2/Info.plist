@@ -60,6 +60,10 @@
     </dict>
     <key>NSMotionUsageDescription</key>
     <string>Needs Permission for Steps</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app requires read and write access to the photo library.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app requires access to the photo library.</string>
     <key>UIAppFonts</key>
     <array>
       <string>MerriweatherSans-Italic-VariableFont_wght.ttf</string>
@@ -91,9 +95,5 @@
     <string>Light</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app requires access to the photo library.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>This app requires read and write access to the photo library.</string>
   </dict>
 </plist>

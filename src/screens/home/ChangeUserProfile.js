@@ -1,6 +1,5 @@
 import { ActivityIndicator, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Image, Alert, TouchableWithoutFeedback, Keyboard, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { Picker } from '@react-native-picker/picker';
 
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from '@react-native-firebase/firestore';

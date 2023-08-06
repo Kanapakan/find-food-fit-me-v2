@@ -125,7 +125,7 @@ const ProfileScreen = ({ navigation, route }) => {
             </View>
           </View>
         <View className="items-center pb-3 bg-white" >
-          <Buttons width={'w-[90%]'} text={'Log out'} action={handleSignOut} />
+          <Buttons width={'w-[90%]'} title={'Log out'} action={handleSignOut} />
         </View>
         </View>
 

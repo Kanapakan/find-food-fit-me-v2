@@ -10,6 +10,7 @@ const Dropdowns = ({
   data,
   iconName,
   error,
+  placeholderText,
   onFocus = () => {},
   handleOnchange = () => {},
   ...props
@@ -17,8 +18,9 @@ const Dropdowns = ({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={{ marginBottom: 10 }}>
-      <Text style={styles.label}>{headLabel}</Text>
+    <View >
+      {headLabel && <Text style={styles.label}>{headLabel}</Text>}
+      
       <View
         style={[
           GlobalStyles.dropdownContainer,
@@ -44,7 +46,7 @@ const Dropdowns = ({
           // minHeight={10}
           labelField="label"
           valueField="value"
-          placeholder={!isFocused ? "Select your activity" : "..."}
+          placeholder={!isFocused ? (!placeholderText ? "Select" : placeholderText) : "..."}
           // searchPlaceholder="Search..."
           value={data}
           // onChange={item => handleOnchange(item.value, "gender")}
@@ -73,6 +75,7 @@ const styles = StyleSheet.create({
     height: 55,
     width: "100%",
     paddingHorizontal: 15,
+    // fontSize:10
   },
   icon: {
     // marginRight: 5,
@@ -93,10 +96,10 @@ const styles = StyleSheet.create({
   },
   inputSearchStyle: {
     height: 40,
-    fontSize: 16,
+    fontSize: 14,
   },
   label: {
-    marginVertical: 5,
+    // marginVertical: 5,
     fontSize: 14,
     color: COLORS.grey,
   },

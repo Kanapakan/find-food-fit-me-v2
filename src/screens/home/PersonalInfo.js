@@ -67,7 +67,7 @@ const PersonalInfo = ({
 				/>
 			</View>
 			<View style={{ alignItems: "center", marginTop: 30, }}>
-				<Buttons width={'w-[90%]'} text="Save" action={validateUserInfo} />
+				<Buttons width={'w-[90%]'} title="Save" action={validateUserInfo} />
 			</View>
 		</View>
 	)

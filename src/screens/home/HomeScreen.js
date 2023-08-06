@@ -33,8 +33,6 @@ const HomeScreen = ({ navigation, route }, props) => {
   }, [])
 
   
-  console.log(auth().currentUser?.uid);
-  
   // const navigation = useNavigation();
 
   return (

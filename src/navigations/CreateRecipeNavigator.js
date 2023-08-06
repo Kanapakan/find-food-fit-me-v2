@@ -6,7 +6,7 @@ import CreateRecipeScreen from '../screens/home/CreateRecipeScreen';
 
 const Stack = createNativeStackNavigator();
 
-const CreateNewRecipeNavigator = () => {
+const CreateRecipeNavigator = () => {
     return (
         <Stack.Navigator
           screenOptions={{
@@ -35,4 +35,4 @@ const CreateNewRecipeNavigator = () => {
       );
 }
 
-export default CreateNewRecipeNavigator
+export default CreateRecipeNavigator
