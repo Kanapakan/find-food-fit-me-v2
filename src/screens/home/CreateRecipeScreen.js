@@ -14,9 +14,11 @@ import MyRecipeScreen from './MyRecipeScreen';
 import Dropdowns from '../../components/Dropdowns';
 import { Data } from '../../../dataJson/data';
 
+import storage from '@react-native-firebase/storage';
+
 const CreateRecipeScreen = ({ route, navigation }, props) => {
 	const [inputs, setInputs] = useState({
-		foodName: "",
+		recipeName: "",
 		time: 0,
 		// ingredientName: [],
 		step: "",
@@ -26,7 +28,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 		cals: 0,
 		imageURL: "",
 		ingredientName: "",
-		ingredientQuantity: "",
+		ingredientQuantity: 0,
 		ingredientUnit: "",
 		ingredientCategory: "",
 
@@ -34,24 +36,10 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 
 	});
 
-	// const [name, setname] = useState("");
-	// const [time, settime] = useState(0);
-	// const [protein, setprotein] = useState(0);
-	// const [fats, setfats] = useState(0);
-	// const [carbs, setcarbs] = useState(0);
-	// const [kcal, setkcal] = useState(0);
-	// const [imageURL, setimageURL] = useState("");
 	const [modalIngredients, setModalIngredients] = useState(false);
 	const [modalSteps, setModalSteps] = useState(false);
-	// const [modal3, setmodal3] = useState(false);
-	const [ingred_name, setingred_name] = useState("");
-	const [ingredient_quan, setingredient_quan] = useState("");
 	const [ingredient_name, setingredient_name] = useState([]);
 	const [ingredient_quantity, setingredient_quantity] = useState([]);
-	const [objIn, setObjIn] = useState([]);
-	const [objIn2, setObjIn2] = useState([]);
-	// --------------- วิธีทำ -------------------------
-	// const [howto, sethowto] = useState("");
 	const stepsData = [
 		"Bring clam juice and oregano to a boil in a saucepan over medium-high heat. Add shrimp; cook and stir just until shrimp turn pink, about 2 minutes. (They will not be cooked through.) Transfer shrimp to a bowl with a slotted spoon; let cool to room temperature. Reserve liquid.",
 		"While the shrimp are cooling, combine tomatoes, cucumbers, celery, onion, and jalapeños in a mixing bowl. Gently mix in reserved cooking liquid, ketchup, lime juice, 2 tablespoons cilantro, and hot sauce until well combined.",
@@ -60,11 +48,11 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 	]
 
 	const ingredientData = [
-		{name: "chicken", category: "meat", quantity: 100, unit: "grams"},
-		{name: "cod fillets", category: "meat", quantity: 1, unit: "pound"},
-		{name: "large egg", category: "dairy products", quantity: 1, unit: "other"},
-		{name: "butter", category: "dairy products", quantity: 1, unit: "tablespoon"},
-		{name: "grated onion", category: "herbs and spice", quantity: 1, unit: "tablespoon"},
+		{ name: "chicken", category: "meat", quantity: 100, unit: "g" },
+		{ name: "cod fillets", category: "meat", quantity: 1, unit: "pound" },
+		{ name: "large egg", category: "dairy products", quantity: 1, unit: "-" },
+		{ name: "butter", category: "dairy products", quantity: 1, unit: "Tbsp" },
+		{ name: "grated onion", category: "herbs and spice", quantity: 1, unit: "Tbsp" },
 	]
 	const [steps, setSteps] = useState(stepsData);
 	const [ingredients, setIngredients] = useState(ingredientData);
@@ -75,6 +63,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 	const [image, setImage] = useState('https://cdn-icons-png.flaticon.com/512/1048/1048392.png');
 
 	const [errors, setErrors] = useState({});
+	const [isVisible, setIsVisible] = useState(false);
 	const insets = useSafeAreaInsets();
 
 
@@ -83,6 +72,18 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 	// async function requestPhotoLibraryPermission() {
 
 	// }
+
+	const takePhotoFromCamera = async () => {
+    ImagePicker.openCamera({
+      width: 1200,
+      height: 780,
+      cropping: true,
+    }).then((image) => {
+      console.log(image);
+      const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+      setImage(imageUri);
+    });
+  };
 
 	const choosePhotoFromLibrary = async () => {
 		ImagePicker.openPicker({
@@ -99,7 +100,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 
 	const openModalIngredients = () => {
 		setModalIngredients(true);
-		renderIngredientList(ingredient_name, ingredient_quantity)
+		// renderIngredientList(ingredient_name, ingredient_quantity)
 	}
 
 	const closeModalIngredients = () => {
@@ -116,76 +117,68 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 		setInputs((prevState) => ({ ...prevState, ['step']: "" }));
 	}
 
+	const showMyRecipeTab = () => {
+		this.bs.current.snapTo(1)
+		setShowTab(true)
+		
+	}
+
 	const addStep = () => {
 		if (inputs.step !== "") {
 			const updatelist = [...steps]
 			updatelist.push(inputs.step)
 			setSteps(updatelist)
 			setInputs((prevState) => ({ ...prevState, ['step']: "" }));
-			console.log('steps', steps);
+			// console.log('steps', steps);
 		} else {
 			Alert.alert("Please enter food step.")
 		}
 		console.log(inputs.step);
 	}
 
-	const delHowto = (howto) => {
-		const index = steps.findIndex(recipe => recipe === howto)
-		const updatehowto = [...steps];
-		updatehowto.splice(index, 1);
-		setSteps(updatehowto)
-		// console.log("del", howto)
+	const delStep = (step) => {
+		const index = steps.findIndex(recipe => recipe === step)
+		const updateStep = [...steps];
+		updateStep.splice(index, 1);
+		setSteps(updateStep)
+		// console.log("del", step)
 	}
 
-	const addIngreList = (ingred_name, ingredient_quan) => {
-		if (ingred_name != "" && ingredient_quan != "") {
-			const ingedient = {
-				ingredient_name: ingred_name,
-				ingredient_quantity: ingredient_quan
+	const addIngreList = () => {
+		if (inputs.ingredientName !== "" && inputs.ingredientQuantity !== 0
+			&& inputs.ingredientCategory != "" && inputs.ingredientUnit != "") {
+			const ingredientArray = {
+				name: inputs.ingredientName,
+				quantity: inputs.ingredientQuantity,
+				category: inputs.ingredientCategory,
+				unit: inputs.ingredientUnit
 			}
-			const objList = [...objIn]
-			objList.push(ingedient)
-			setObjIn(objList)
-			const listname = [...ingredient_name]
-			const listquan = [...ingredient_quantity]
-			listname.push(ingred_name)
-			setingredient_name(listname)
-
-			listquan.push(ingredient_quan)
-			setingredient_quantity(listquan)
-
-			setingred_name('')
-			setingredient_quan("")
-
+			setIngredients([...ingredients, ingredientArray]);
+			setInputs((prevState) => ({ ...prevState, ['ingredientName']: "" }));
+			setInputs((prevState) => ({ ...prevState, ['ingredientQuantity']: 0 }));
+			setInputs((prevState) => ({ ...prevState, ['ingredientCategory']: "" }));
+			setInputs((prevState) => ({ ...prevState, ['ingredientUnit']: "" }));
+			console.log("add ", ingredientArray)
 		} else {
 			Alert.alert("กรุณาใส่ข้อมูลวัตถุดิบให้ครบถ้วน")
 		}
+		console.log("all new ", ingredients)
 	}
 
-	const delIngedient = (item) => {
-		const index = objIn.findIndex(recipe => recipe == item)
-		const indexNameList = ingredient_name.findIndex(recipe => recipe == item.ingredient_name)
-		const indexQuanList = ingredient_name.findIndex(recipe => recipe == item.ingredient_quantity)
-		const updateobjIn = [...objIn];
-		const updateobjInName = [...ingredient_name];
-		const updateobjInQuan = [...ingredient_quantity];
-		updateobjIn.splice(index, 1);
-		updateobjInName.splice(indexNameList, 1)
-		updateobjInQuan.splice(indexQuanList, 1)
-
-		setObjIn(updateobjIn)
-		setingredient_name(updateobjInName)
-		setingredient_quantity(updateobjInQuan)
-		// console.log('del', objIn)
+	const delIngredient = (item) => {
+		const index = ingredients.findIndex(ingredient => ingredient === item)
+		const updateIngredients = [...ingredients];
+		updateIngredients.splice(index, 1);
+		setIngredients(updateIngredients)
+		console.log('del', item)
 	}
 
+	// const createNewRecipe = () => {
+
+	// }
 
 	const handleOnchange = (text, input) => {
 		setInputs((prevState) => ({ ...prevState, [input]: text }));
-	};
-
-	const handleClearValue = (input) => {
-		setInputs((prevState) => ({ ...prevState, [input]: null }));
 	};
 
 	const handleError = (error, input) => {
@@ -197,12 +190,12 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 		return (
 			<View>
 				{steps.map((item, index) => (
-					<View className="w-full flex-row self-center border-b-2 mb-2">
+					<View key={index} className="w-full flex-row self-center border-b-2 mb-2">
 						<View className="flex-[10] mb-2 flex-row gap-[0.1] mr-4 ">
 							<Text className="text-sm font-semibold" >{index + 1}. </Text>
 							<Text className="text-sm" >{item}</Text>
 						</View>
-						<TouchableOpacity className="flex-1 items-end" onPress={() => delHowto(item)}>
+						<TouchableOpacity className="flex-1 items-end" onPress={() => delStep(item)}>
 							<Icon name="delete" style={styles.delIngredient} />
 						</TouchableOpacity>
 					</View>
@@ -213,51 +206,54 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 	}
 
 	const renderIngredientList = () => {
-
 		return (
 			<View>
-				<View className="w-full flex-row self-center border-b-2 mb-2">
-				<View className="flex-[10] mb-2 flex-row mr-4 gap-6 justify-center">
-					<Text></Text>
-					<Text>Name</Text>
-					<Text>Category</Text>
-					<Text>Quantity</Text>
-					<Text>Unit</Text>
-				</View>
-				</View>
 				{ingredients.map((item, index) => (
-					// <Text>{item.name}</Text>
-					<View className="w-full flex-row self-center border-b-2 mb-2">
-						<View className="flex-[10] mb-2 flex-row gap-5 mr-4 ">
-							
-							<Text className="text-sm font-semibold" >{index + 1}. </Text>
-							<Text className="text-sm" >{item.name}</Text>
-							<Text className="text-sm" >{item.category}</Text>
-							<Text className="text-sm" >{item.quantity}</Text>
-							<Text className="text-sm" >{item.unit}</Text>
+					<View key={index} className="flex-1 flex-col self-center border-b-2 mb-2">
+						<View className="w-full flex-row">
+							<View className="flex-[11] flex-row gap-5 mr-4 ">
+								<View className="flex-[1.5] flex-row">
+									<Text className="text-sm font-semibold" >{index + 1}. </Text>
+									<Text className="text-sm" >{item.name.charAt(0).toUpperCase() + item.name.slice(1)}</Text>
+								</View>
+								<View className="flex-1 flex-row">
+									<Text className="flex-1 text-sm text-center" >{item.quantity}</Text>
+									<Text className="flex-1 text-sm text-center" >{item.unit}</Text>
+								</View>
+							</View>
+
+							<TouchableOpacity className="flex-1 items-end" onPress={() => delIngredient(item)}>
+								<Icon name="delete" style={styles.delIngredient} />
+							</TouchableOpacity>
 						</View>
-						<TouchableOpacity className="flex-1 items-end" onPress={() => delHowto(item)}>
-							<Icon name="delete" style={styles.delIngredient} />
-						</TouchableOpacity>
+						<Text className="flex-1 text-sm mb-2" >({item.category.charAt(0).toUpperCase() + item.category.slice(1)})</Text>
 					</View>
 				))}
 			</View>
 		)
 	}
 
-	// console.log(Object.values(objIn))
+	const clickOutside = () => {
+		// bs.current.snapTo(1)
+		Keyboard.dismiss
+		setIsVisible(false)
+	}
 
 	renderInner = () => (
+		<TouchableWithoutFeedback onPress={() => bs.current.snapTo(1)}>
 		<View style={styles.panel}>
-
-			<Icon
-				onPress={() => this.bs.current.snapTo(1)}
+			<View className=" items-end">
+				<Icon
+					onPress={() => this.bs.current.snapTo(1)}
 				name='window-close'
 				style={{ color: COLORS.darkBlue, fontSize: 22 }}
 			/>
+			</View>
+			
+			
 			<View style={{ alignItems: 'center' }}>
 				<Text style={styles.panelTitle}>Upload Photo</Text>
-				<Text style={styles.panelSubtitle}>Choose Your Profile Picture</Text>
+				<Text style={styles.panelSubtitle}>Choose Your Recipe Picture</Text>
 			</View>
 			{/* <TouchableOpacity style={styles.panelButton}>
 			<Text style={styles.panelButtonTitle}>Take Photo</Text>
@@ -265,7 +261,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 			<View className="flex-col">
 				<View className="mb-3">
 
-					<Buttons width={"w-['90'%]"} title={'Take Photo'} />
+					<Buttons width={"w-['90'%]"} title={'Take Photo'} action={takePhotoFromCamera}/>
 				</View>
 				<View>
 
@@ -273,19 +269,18 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 				</View>
 			</View>
 		</View>
+		</TouchableWithoutFeedback>
 	);
 
 	bs = React.createRef();
-	// fall = new Animated.Value(1);
 
 
 	return (
-		<TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
+		<TouchableWithoutFeedback onPress={() => setIsVisible(false)}>
 			<View style={{
 				flex: 1,
 				marginTop: insets.top,
-				// paddingBottom: insets.bottom,
-				backgroundColor: COLORS.white
+				backgroundColor: COLORS.white,
 			}}>
 				<BottomSheet
 					ref={this.bs}
@@ -293,8 +288,9 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 					renderContent={this.renderInner}
 					renderHeader={this.renderHeader}
 					initialSnap={1}
-					// callbackNode={this.fall}
 					enabledGestureInteraction={true}
+					isVisible={isVisible}
+					modalProps={{ onRequestClose: () => { setIsVisible(false)}}}
 				/>
 
 
@@ -304,7 +300,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 					isVisible={modalIngredients}
 					statusBarTranslucent={true}
 					animationInTiming={500}
- 					animationOutTiming={1000}
+					animationOutTiming={1000}
 				>
 					<View className="flex-1  items-center">
 						<TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
@@ -351,7 +347,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 																value={inputs.ingredientQuantity}
 																onChangeText={(text) => handleOnchange(text, "ingredientQuantity")}
 																onFocus={() => handleError(null, "ingredientQuantity")}
-																// iconName={'shaker'}
+																keyboardType="number-pad"
 																placeholder="Quantity"
 																error={errors.ingredientQuantity}
 															/>
@@ -359,13 +355,12 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 
 														<View className="flex-1 items-center">
 															<Dropdowns
-															value={inputs.ingredientUnit}
+																value={inputs.ingredientUnit}
 																// headLabel="Ingredient Category"
 																onFocus={() => handleError(null, "ingredientUnit")}
 																data={Data.ingredient_units}
 																dataType="ingredientUnit"
 																placeholderText="Unit"
-																keyboardType="decimal-pad"
 																handleOnchange={handleOnchange}
 																error={errors.ingredientUnit}
 															/>
@@ -375,7 +370,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 														<Buttons width={'w-[50%]'} title={'Add ingredients'} action={addIngreList} />
 													</View>
 												</View>
-													
+
 												{steps &&
 													<ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-[4] flex-col w-full">
 														<Pressable>
@@ -400,7 +395,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 					isVisible={modalSteps}
 					statusBarTranslucent={true}
 					animationInTiming={500}
- 					animationOutTiming={1000}
+					animationOutTiming={1000}
 				>
 					<View className="flex-1 justify-center items-center">
 						<TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
@@ -466,7 +461,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 							tabTitle={"My Recipes"}
 							showTab={showTab}
 							setshowTab={setShowTab}
-							onPress={() => setShowTab(true)}
+							onPress={() => showMyRecipeTab()}
 						/>
 						<TopTab
 							tabTitle={"Create New Recipe"}
@@ -478,14 +473,15 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 				</View>
 				{/* ------------------- Tab 1 ------------------ */}
 				{showTab ?
-					<MyRecipeScreen />
+					<MyRecipeScreen
+					navigation={navigation}
+					/>
 					:
 
 					// ----------------------- Tab 2 --------------------------------------
 					<ScrollView style={styles.container}>
 						<TouchableOpacity onPress={() => this.bs.current.snapTo(0)}>
 							<View className="flex-1 h-52 w-auto bg-gray-600 justify-center">
-
 								<ImageBackground
 									source={{
 										uri: image,
@@ -510,17 +506,17 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 								</ImageBackground>
 							</View>
 						</TouchableOpacity>
-						<Pressable>
+						<Pressable onPress={() => this.bs.current.snapTo(1)}>
 							<View className="flex-1 flex-col mt-3">
 								<View className="flex-1 flex-col items-center">
 									<Input
-										value={inputs.foodName}
-										onChangeText={(text) => handleOnchange(text, "foodName")}
-										onFocus={() => handleError(null, "foodName")}
+										value={inputs.recipeName}
+										onChangeText={(text) => handleOnchange(text, "recipeName")}
+										onFocus={() => handleError(null, "recipeName")}
 										iconName="pasta"
 										label="Food name"
 										placeholder="Enter food name"
-										error={errors.foodName}
+										error={errors.recipeName}
 									/>
 
 									<Input
@@ -533,8 +529,9 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 										keyboardType="decimal-pad"
 										error={errors.time}
 									/>
+									<View className="mb-2"></View>
 									<Buttons width={'w-[90%]'} title={'Show ingredients'} action={openModalIngredients} />
-									<View className="mt-3"></View>
+									<View className="mt-5"></View>
 									<Buttons width={'w-[90%]'} title={'Show steps'} action={openModalSteps} />
 
 									<Text className="text-lg mt-5 mb-2 font-semibold text-gray-600">Nutrition Facts (per serving)</Text>
@@ -573,20 +570,22 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 											/>
 										</View>
 									</View>
+									<View className="flex-1 w-full items-center">
+										<Input
+											value={inputs.cals}
+											onChangeText={(text) => handleOnchange(text, "cals")}
+											onFocus={() => handleError(null, "cals")}
+											iconName="calculator"
+											label="Calories (Optional)"
+											placeholder="Enter food calories (Optional)"
+											keyboardType="decimal-pad"
+											error={errors.cals}
+										/>
+									</View>
 
-									<Input
-										value={inputs.cals}
-										onChangeText={(text) => handleOnchange(text, "cals")}
-										onFocus={() => handleError(null, "cals")}
-										iconName="calculator"
-										label="Calories (Optional)"
-										placeholder="Enter food calories (Optional)"
-										keyboardType="decimal-pad"
-										error={errors.cals}
-									/>
 								</View>
-								<View style={{ alignItems: "center", marginTop: 30, marginBottom: 30 }}>
-									<Buttons width={'w-[90%]'} title={'Create'} />
+								<View className="flex-1 items-center mb-3" >
+									<Buttons width={'w-[90%]'} title={'Create'}/>
 								</View>
 							</View>
 						</Pressable>
@@ -598,157 +597,9 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 };
 
 const styles = StyleSheet.create({
-	headerText: {
-		fontSize: 18,
-		color: "#8ec18d",
-		paddingTop: 10,
-		paddingBottom: 10,
-		textAlign: "center"
-	},
-	containermodal: {
-		// flexDirection: "column",
-		// flex: 1,
-		backgroundColor: "#fff",
-	},
 	container: {
 		flex: 1,
 		backgroundColor: "#fff",
-		// alignItems: "center",
-		// justifyContent: "center",
-	},
-	headBox: {
-		backgroundColor: "#e3e3e3",
-		//ตอนเอาลง tab เอา marginTop ออกด้วยนะ
-
-		alignItems: "flex-start",
-		padding: 8
-	},
-	headText: {
-		fontSize: 23,
-		fontWeight: "bold",
-		color: "#000",
-		marginLeft: 30
-	},
-	btnTextAll: {
-		fontSize: 18,
-		color: "#000",
-		marginLeft: 25,
-		marginTop: 30
-	},
-	pickerBorder: {
-		width: "40%",
-		height: 45,
-		marginTop: -35,
-		marginLeft: 150,
-		borderColor: '#adacac',
-		borderWidth: 2,
-		borderRadius: 10,
-	},
-	Box: {
-		marginTop: -35,
-		marginLeft: 170,
-		width: "50%",
-		height: 45,
-		borderColor: '#adacac',
-		borderWidth: 2,
-		borderRadius: 10,
-		fontSize: 18,
-		textAlign: "center",
-	},
-	Box1: {
-		// flex: 1,
-		marginTop: -35,
-		marginRight: 5,
-		width: "27%",
-		height: 45,
-		borderColor: '#adacac',
-		borderWidth: 2,
-		borderRadius: 10,
-		fontSize: 18,
-		textAlign: "center",
-	},
-	boxModal: {
-		marginLeft: 10,
-		width: "95%",
-		height: 45,
-		borderColor: '#adacac',
-		borderWidth: 2,
-		borderRadius: 10,
-		fontSize: 18,
-		// justifyContent: "center",
-		textAlign: "center",
-	},
-	boxmodalSteps: {
-		marginLeft: 15,
-		width: "80%",
-		height: 45,
-		borderColor: '#adacac',
-		borderWidth: 2,
-		borderRadius: 10,
-		fontSize: 18,
-		// justifyContent: "center",
-		textAlign: "center",
-	},
-	btnSave: {
-		width: "40%",
-		elevation: 8,
-		backgroundColor: "#8ec18d",
-		borderRadius: 10,
-		paddingVertical: 10,
-		// paddingHorizontal: 20,
-	},
-	btnOpenAddIn: {
-		marginTop: -35,
-		marginLeft: 170,
-		width: "50%",
-		elevation: 8,
-		backgroundColor: "#8ec18d",
-		borderRadius: 10,
-		paddingVertical: 10,
-		// paddingHorizontal: 20,
-	},
-	btnAddIng: {
-		width: "30%",
-		// elevation: 8,
-		backgroundColor: "#8ec18d",
-		borderRadius: 10,
-		paddingVertical: 5,
-		alignSelf: "center",
-		marginTop: 75,
-		// paddingHorizontal: 20,
-	},
-	btnSaveText: {
-		fontSize: 20,
-		color: "#fff",
-		fontWeight: "bold",
-		alignSelf: "center",
-	},
-	Box2: {
-		marginTop: -35,
-		marginLeft: 150,
-		width: "40%",
-		height: 45,
-		borderColor: '#adacac',
-		borderWidth: 2,
-		borderRadius: 10,
-		fontSize: 18,
-		textAlign: "center",
-	},
-	pickerdropdown: {
-		fontFamily: 'serif',
-		fontSize: 18,
-		// paddingHorizontal: 10,
-		// paddingVertical: 10,
-		// borderWidth: 2,
-		// borderColor: '#8ec18d',
-		color: "#adacac",
-		// fontWeight: "bold",
-		// borderRadius: 8,
-		// borderStyle: "hidden",
-		// marginTop: 5,
-		// padding: 5,
-		marginTop: -5,
-		textAlign: "center",
 	},
 	square: {
 		width: "90%",
@@ -760,52 +611,21 @@ const styles = StyleSheet.create({
 		// borderColor: '#8ec18d',
 
 	},
-	checkContainer: {
-		width: "100%",
-		flex: 1,
-		// margin: 5,
-		paddingHorizontal: 10,
-		flexDirection: 'row',
-		alignSelf: "center",
-		// backgroundColor: '#8ec18d'
-	},
-	ingredientName: {
-		flex: 1,
-		fontSize: 24,
-		color: "#fff",
-		alignSelf: "center",
-		paddingLeft: 10
-		// paddingVertical:5
-	},
 	delIngredient: {
 		fontSize: 28,
 		fontWeight: "bold",
 		color: COLORS.darkGreen
 	},
-	headText2: {
-		fontSize: 15,
-		fontWeight: "bold",
-		color: "#000",
-		marginTop: 10,
-		marginLeft: 10
-	},
-	commandButton: {
-		padding: 15,
-		borderRadius: 10,
-		backgroundColor: '#FF6347',
-		alignItems: 'center',
-		marginTop: 10,
-	},
 	panel: {
-		padding: 20,
-		backgroundColor: '#FFFFFF',
+		padding: 21,
+		backgroundColor: COLORS.lightGreen,
+		shadowColor: COLORS.black,
+		shadowOffset: { width: -1, height: -6 },
+		shadowRadius: 2,
+		shadowOpacity: 0.4,
 		// paddingTop: 60,
 		// borderTopLeftRadius: 20,
 		// borderTopRightRadius: 20,
-		// shadowColor: '#000000',
-		// shadowOffset: {width: 0, height: 0},
-		// shadowRadius: 5,
-		// shadowOpacity: 0.4,
 	},
 	header: {
 		backgroundColor: COLORS.blue,
@@ -839,20 +659,6 @@ const styles = StyleSheet.create({
 		fontSize: 17,
 		fontWeight: 'bold',
 		color: 'white',
-	},
-	action: {
-		flexDirection: 'row',
-		marginTop: 10,
-		marginBottom: 10,
-		borderBottomWidth: 1,
-		borderBottomColor: '#f2f2f2',
-		paddingBottom: 5,
-	},
-	textInput: {
-		flex: 1,
-		marginTop: Platform.OS === 'ios' ? 0 : -12,
-		paddingLeft: 10,
-		color: '#05375a',
 	},
 	modalView: {
 		flex: 1,

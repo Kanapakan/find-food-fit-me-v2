@@ -13,11 +13,12 @@ import { Data } from '../../../dataJson/data';
 import { getUserProfile } from '../../store/userSlice';
 import { useSelector } from 'react-redux';
 import Loader from '../../components/Loader';
-import PersonalInfo from './PersonalInfo';
-import AccountInfo from './AccountInfo';
 import TopTab from '../../components/TopTab';
+import AccountInfoScreen from './AccountInfoScreen';
+import PersonalInfoScreen from './PersonalInfoScreen';
 
-const ChangeUserProfile = ({ navigation, route }) => {
+
+const ChangeUserProfileScreen = ({ navigation, route }) => {
   const userData = useSelector(getUserProfile);
   const [inputs, setInputs] = useState({
     name: "",
@@ -244,7 +245,7 @@ const ChangeUserProfile = ({ navigation, route }) => {
             </View>
 
             {showTab ?
-              <PersonalInfo
+              <PersonalInfoScreen
                 inputs={inputs}
                 handleOnchange={handleOnchange}
                 handleError={handleError}
@@ -252,7 +253,7 @@ const ChangeUserProfile = ({ navigation, route }) => {
                 errors={errors}
               />
               :
-              <AccountInfo
+              <AccountInfoScreen
                 inputs={inputs}
                 handleOnchange={handleOnchange}
                 handleError={handleError}
@@ -284,4 +285,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default ChangeUserProfile
+export default ChangeUserProfileScreen

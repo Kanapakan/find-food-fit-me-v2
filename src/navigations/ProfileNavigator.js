@@ -1,8 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { BookmarkScreen, HomeScreen, ProfileScreen } from "../screens";
+import { BookmarkScreen, HomeScreen, ProfileScreen, ChangeUserProfileScreen } from "../screens";
 import { ROUTES } from "../constants";
-import ChangeUserProfile from "../screens/home/ChangeUserProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +26,7 @@ const ProfileNavigator = () => {
       <Stack.Screen
         options={{ headerShown: false }}
         name={ROUTES.CHANGE_USER_PROFILE}
-        component={ChangeUserProfile}
+        component={ChangeUserProfileScreen}
       />
       {/* <Stack.Screen name="ChangeUserDetail" component={ChangeUserDetail} 
         options={{

@@ -4,7 +4,7 @@ import Input from '../../components/Inputs';
 import { Pressable } from 'react-native';
 import Buttons from '../../components/Buttons';
 
-const AccountInfo = ({
+const AccountInfoScreen = ({
   inputs,
   errors,
   handleOnchange = () => { },
@@ -68,4 +68,4 @@ const AccountInfo = ({
   )
 }
 
-export default AccountInfo
+export default AccountInfoScreen

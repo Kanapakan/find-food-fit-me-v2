@@ -36,11 +36,11 @@ const LoginScreen = ({navigation, route}) => {
     setisLoading(true);
     const doc = await userRef.doc(auth().currentUser?.uid).get()
     if (!doc.exists) {
-      setisLoading(false);
       navigation.navigate(ROUTES.SIGNUP_USER_INFO);
-    } else {
       setisLoading(false);
+    } else {
       navigation.navigate(ROUTES.BOTTOM_TAB);
+      setisLoading(false);
     }
   }
 

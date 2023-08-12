@@ -3,6 +3,7 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ROUTES } from '../constants';
 import CreateRecipeScreen from '../screens/home/CreateRecipeScreen';
+import RecipeDetailScreen from '../screens/home/RecipeDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,13 +25,13 @@ const CreateRecipeNavigator = () => {
             options={{ title: "Create new recipe" }}
             component={CreateRecipeScreen}
           />
-          {/* <Stack.Screen
-            name="MenuDetail"
+          <Stack.Screen
+            name="RecipeDetail"
             options={{
               headerShown: false,
             }}
-            component={MenuDetail}
-          /> */}
+            component={RecipeDetailScreen}
+          />
         </Stack.Navigator>
       );
 }

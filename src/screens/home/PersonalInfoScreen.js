@@ -5,7 +5,7 @@ import Input from '../../components/Inputs'
 import Buttons from '../../components/Buttons'
 import { Data } from '../../../dataJson/data'
 
-const PersonalInfo = ({
+const PersonalInfoScreen = ({
 	inputs,
 	errors,
 	handleOnchange = () => { },
@@ -73,4 +73,4 @@ const PersonalInfo = ({
 	)
 }
 
-export default PersonalInfo
+export default PersonalInfoScreen
