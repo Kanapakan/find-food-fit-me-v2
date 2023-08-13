@@ -40,4 +40,12 @@ export const Data = {
     { label: "Drops", value: "drops" },
     { label: "Other", value: "-" },
   ],
+
+  meals: [
+    { label: "Breakfast", value: "breakfast" },
+    { label: "Lunch", value: "lunch" },
+    { label: "Dinner", value: "dinner" },
+    { label: "Snack", value: "snack" },
+  ],
+
 };

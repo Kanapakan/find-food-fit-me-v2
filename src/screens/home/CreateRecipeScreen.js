@@ -31,9 +31,6 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 		ingredientQuantity: 0,
 		ingredientUnit: "",
 		ingredientCategory: "",
-
-
-
 	});
 
 	const [modalIngredients, setModalIngredients] = useState(false);
