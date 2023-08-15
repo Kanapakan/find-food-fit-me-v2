@@ -48,7 +48,7 @@ const SignUpScreen = ({ navigation, route }) => {
         ).then((userCredential) => {
           // Signed in 
           if (userCredential.user) {
-            console.log('Create new');
+            // console.log('Create new');
             navigation.navigate(ROUTES.SIGNUP_USER_INFO, {email: inputs.email, password: inputs.password});
             // setisLoading(false);
           }
@@ -158,7 +158,7 @@ const SignUpScreen = ({ navigation, route }) => {
             </View>
 
             <View className="items-center flex mt-5">
-            <Buttons title="Sign Up" action={validate}/>
+            <Buttons width={'w-[90%]'} title="Sign Up" action={validate}/>
             </View>
 
             <View className="self-center pt-5">

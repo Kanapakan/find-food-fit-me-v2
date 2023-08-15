@@ -13,7 +13,7 @@ const HomeScreen = ({ navigation, route }, props) => {
   const userData = useSelector(getUserProfile);
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
-  const userRef = firestore().collection('Users')
+  const userRef = firestore().collection('users')
   
   const getuser = () => {
     const unsub = userRef.doc(auth().currentUser?.uid).onSnapshot(docSnapshot => {

@@ -30,11 +30,12 @@ const LoginScreen = ({navigation, route}) => {
   });
   const [isLoading, setisLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const userRef = firestore().collection('Users')
+  const userRef = firestore().collection('users')
 
   const checkUserExist = async () => {
     setisLoading(true);
     const doc = await userRef.doc(auth().currentUser?.uid).get()
+    console.log(doc);
     if (!doc.exists) {
       navigation.navigate(ROUTES.SIGNUP_USER_INFO);
       setisLoading(false);

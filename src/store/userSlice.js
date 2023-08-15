@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-	userProfile: {}
+	userProfile: {},
+	bookmark: [],
+	userRecipe: [],
 };
 
 export const userSlice = createSlice({
@@ -11,14 +13,18 @@ export const userSlice = createSlice({
 		addUserProfile: (state, action) => {
 			state.userProfile = action.payload
 		},
+		addUserRecipe: (state, action) => {
+			state.userRecipe = action.payload
+		},
 	}
 
 })
 
 // Action
-export const {addUserProfile,} = userSlice.actions
+export const {addUserProfile, addUserRecipe} = userSlice.actions
 
 // Reducer
 export const getUserProfile = (state) => state.user.userProfile
+export const getUserRecipe = (state) => state.user.userRecipe
 
 // export default userSlice.reducer;

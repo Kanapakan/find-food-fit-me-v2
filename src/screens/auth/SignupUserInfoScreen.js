@@ -103,7 +103,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
       dailyCal = parseInt(bmr * dailyCalVal);
     }
     await firestore()
-      .collection('Users')
+      .collection('users')
       .doc(auth().currentUser?.uid)
       .set({
         userId: auth().currentUser?.uid,
@@ -248,7 +248,7 @@ const SignupUserInfoScreen = ({ navigation, route }, props) => {
               />
             </View>
             <View className="items-center mt-5 mb-10">
-              <Buttons title="Save" action={validate} />
+              <Buttons width={'w-[90%]'} title="Save" action={validate} />
             </View>
           </KeyboardAwareScrollView>
         </ScrollView>

@@ -15,6 +15,9 @@ import Dropdowns from '../../components/Dropdowns';
 import { Data } from '../../../dataJson/data';
 
 import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import Loader from '../../components/Loader';
 
 const CreateRecipeScreen = ({ route, navigation }, props) => {
 	const [inputs, setInputs] = useState({
@@ -35,33 +38,35 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 
 	const [modalIngredients, setModalIngredients] = useState(false);
 	const [modalSteps, setModalSteps] = useState(false);
-	const [ingredient_name, setingredient_name] = useState([]);
-	const [ingredient_quantity, setingredient_quantity] = useState([]);
-	const stepsData = [
-		"Bring clam juice and oregano to a boil in a saucepan over medium-high heat. Add shrimp; cook and stir just until shrimp turn pink, about 2 minutes. (They will not be cooked through.) Transfer shrimp to a bowl with a slotted spoon; let cool to room temperature. Reserve liquid.",
-		"While the shrimp are cooling, combine tomatoes, cucumbers, celery, onion, and jalapeños in a mixing bowl. Gently mix in reserved cooking liquid, ketchup, lime juice, 2 tablespoons cilantro, and hot sauce until well combined.",
-		"Place four whole shrimp in a small bowl; cover with plastic wrap. Chop remaining shrimp into bite-sized pieces; add to vegetable mixture and stir to combine. Cover with plastic wrap. Refrigerate both bowls until thoroughly chilled, 2 to 3 hours.",
-		"Place four whole shrimp in a small bowl; cover with plastic wrap. Chop remaining shrimp into bite-sized pieces; add to vegetable mixture and stir to combine. Cover with plastic wrap. Refrigerate both bowls until thoroughly chilled, 2 to 3 hours."
-	]
+	// const stepsData = [
+	// 	"Bring clam juice and oregano to a boil in a saucepan over medium-high heat. Add shrimp; cook and stir just until shrimp turn pink, about 2 minutes. (They will not be cooked through.) Transfer shrimp to a bowl with a slotted spoon; let cool to room temperature. Reserve liquid.",
+	// 	"While the shrimp are cooling, combine tomatoes, cucumbers, celery, onion, and jalapeños in a mixing bowl. Gently mix in reserved cooking liquid, ketchup, lime juice, 2 tablespoons cilantro, and hot sauce until well combined.",
+	// 	"Place four whole shrimp in a small bowl; cover with plastic wrap. Chop remaining shrimp into bite-sized pieces; add to vegetable mixture and stir to combine. Cover with plastic wrap. Refrigerate both bowls until thoroughly chilled, 2 to 3 hours.",
+	// 	"Place four whole shrimp in a small bowl; cover with plastic wrap. Chop remaining shrimp into bite-sized pieces; add to vegetable mixture and stir to combine. Cover with plastic wrap. Refrigerate both bowls until thoroughly chilled, 2 to 3 hours."
+	// ]
 
-	const ingredientData = [
-		{ name: "chicken", category: "meat", quantity: 100, unit: "g" },
-		{ name: "cod fillets", category: "meat", quantity: 1, unit: "pound" },
-		{ name: "large egg", category: "dairy products", quantity: 1, unit: "-" },
-		{ name: "butter", category: "dairy products", quantity: 1, unit: "Tbsp" },
-		{ name: "grated onion", category: "herbs and spice", quantity: 1, unit: "Tbsp" },
-	]
-	const [steps, setSteps] = useState(stepsData);
-	const [ingredients, setIngredients] = useState(ingredientData);
+	// const ingredientData = [
+	// 	{ name: "chicken", category: "meat", quantity: 100, unit: "g" },
+	// 	{ name: "cod fillets", category: "meat", quantity: 1, unit: "pound" },
+	// 	{ name: "large egg", category: "dairy products", quantity: 1, unit: "-" },
+	// 	{ name: "butter", category: "dairy products", quantity: 1, unit: "Tbsp" },
+	// 	{ name: "grated onion", category: "herbs and spice", quantity: 1, unit: "Tbsp" },
+	// ]
+	const [steps, setSteps] = useState([]);
+	const [ingredients, setIngredients] = useState([]);
 
 	// ---------------- tab --------------------------
 	const [showTab, setShowTab] = useState(true)
-	const [isLoading, setisLoading] = useState(true);
+	const [isLoading, setisLoading] = useState(false);
 	const [image, setImage] = useState('https://cdn-icons-png.flaticon.com/512/1048/1048392.png');
 
 	const [errors, setErrors] = useState({});
 	const [isVisible, setIsVisible] = useState(false);
 	const insets = useSafeAreaInsets();
+
+	const [uploading, setUploading] = useState(false);
+  const [transferred, setTransferred] = useState(0);
+
 
 
 	// const myRecipe = (useSelector((state) => state.recipes.myRecipe))
@@ -69,6 +74,55 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 	// async function requestPhotoLibraryPermission() {
 
 	// }
+
+	const uploadImage = async () => {
+    if( image == null ) {
+      return null;
+    }
+    const uploadUri = image;
+    let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+
+    // Add timestamp to File Name
+    const extension = filename.split('.').pop(); 
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+
+    setUploading(true);
+    setTransferred(0);
+
+    const storageRef = storage().ref(`photos/${filename}`);
+    const task = storageRef.putFile(uploadUri);
+
+    // Set transferred state
+    task.on('state_changed', (taskSnapshot) => {
+      console.log(
+        `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
+      );
+
+      setTransferred(
+        Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) *
+          100,
+      );
+    });
+
+    try {
+      await task;
+
+      const url = await storageRef.getDownloadURL();
+
+      setUploading(false);
+      setImage(null);
+
+      return url;
+
+    } catch (e) {
+			setisLoading(false);
+      console.log(e);
+      return null;
+    }
+
+  };
+
 
 	const takePhotoFromCamera = async () => {
     ImagePicker.openCamera({
@@ -142,8 +196,9 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 	}
 
 	const addIngreList = () => {
+
 		if (inputs.ingredientName !== "" && inputs.ingredientQuantity !== 0
-			&& inputs.ingredientCategory != "" && inputs.ingredientUnit != "") {
+			&& (inputs.ingredientCategory !== "" && !isNaN(+inputs.ingredientQuantity) && inputs.ingredientQuantity > 0 ) && inputs.ingredientUnit !== "") {
 			const ingredientArray = {
 				name: inputs.ingredientName,
 				quantity: inputs.ingredientQuantity,
@@ -157,7 +212,19 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 			setInputs((prevState) => ({ ...prevState, ['ingredientUnit']: "" }));
 			console.log("add ", ingredientArray)
 		} else {
-			Alert.alert("กรุณาใส่ข้อมูลวัตถุดิบให้ครบถ้วน")
+			let errorInfo = "";
+			if(inputs.ingredientQuantity) {
+				if (isNaN(+inputs.ingredientQuantity)) {
+					errorInfo = "Please input Number only.";
+				} else if (inputs.ingredientQuantity <= 0 ) {
+					errorInfo = "The quantity should be larger than 0."
+				} 
+			}else {
+					errorInfo ="Please fill your ingredient information completely.";
+				}
+			 
+				Alert.alert(errorInfo);
+				
 		}
 		console.log("all new ", ingredients)
 	}
@@ -170,9 +237,125 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 		console.log('del', item)
 	}
 
-	// const createNewRecipe = () => {
+	
 
-	// }
+	const validate = () => {
+    Keyboard.dismiss();
+    let isValid = true;
+
+    if (!inputs.recipeName) {
+      handleError("Please input recipe name.", "recipeName");
+      isValid = false;
+    }
+
+    if (!inputs.time) {
+      handleError("Please input cooking time", "time");
+      isValid = false;
+    } else if (isNaN(+inputs.time)) {
+      handleError("Please input Number only.", "time");
+      isValid = false;
+    } else if (inputs.time <= 0 ) {
+      handleError("The minimum cooking time is 1 minute.", "time");
+      isValid = false;
+    }
+
+    if (!inputs.protein) {
+      handleError("Please input amount of protein (g).", "protein");
+      isValid = false;
+    } else if (isNaN(+inputs.protein)) {
+      handleError("Please input Number only.", "protein");
+      isValid = false;
+    } else if (inputs.protein <= 0 ) {
+      handleError("The amount of protein should be larger than 0 g.", "protein");
+      isValid = false;
+    }
+
+		if (!inputs.carbs) {
+      handleError("Please input amount of carbs (g).", "carbs");
+      isValid = false;
+    } else if (isNaN(+inputs.carbs)) {
+      handleError("Please input Number only.", "carbs");
+      isValid = false;
+    } else if (inputs.carbs <= 0 ) {
+      handleError("The amount of carbs should be larger than 0 g.", "carbs");
+      isValid = false;
+    }
+
+		if (!inputs.fat) {
+      handleError("Please input amount of fat (g).", "fat");
+      isValid = false;
+    } else if (isNaN(+inputs.fat)) {
+      handleError("Please input Number only.", "fat");
+      isValid = false;
+    } else if (inputs.fat <= 0 ) {
+      handleError("The amount of fat should be larger than 0 g.", "fat");
+      isValid = false;
+    }
+
+		if (!inputs.cals) {
+      handleError("Please input amount of calories.", "cals");
+      isValid = false;
+    } else if (isNaN(+inputs.cals)) {
+      handleError("Please input Number only.", "cals");
+      isValid = false;
+    } else if (inputs.cals <= 0 ) {
+      handleError("The minimum calories is 0 cal.", "cals");
+      isValid = false;
+    }
+
+    if (isValid) {
+      createNewRecipe();
+    }
+  };
+
+	const createNewRecipe = async () => {
+		setisLoading(true);
+		const imageUrl = await uploadImage();
+    console.log('Image Url: ', imageUrl);
+
+		firestore()
+    .collection('recipes')
+    .add({
+			userId: auth().currentUser?.uid,
+			recipeName: inputs.recipeName,
+			cals: inputs.cals,
+			time: inputs.time,
+			ingredients: ingredients,
+			steps: steps,
+			image: imageUrl,
+			carbs: inputs.carbs,
+			protein: inputs.protein,
+			fat: inputs.fat,
+			createdAt: firestore.Timestamp.fromDate(new Date()),
+    })
+    .then(() => {
+			setInputs((prevState) => ({ ...prevState, ['recipeName']: "" }));
+			setInputs((prevState) => ({ ...prevState, ['cals']: 0 }));
+			setInputs((prevState) => ({ ...prevState, ['time']: 0 }));
+			setIngredients([])
+			setSteps([])
+			// setInputs((prevState) => ({ ...prevState, ['ingredients']: null }));
+			// setInputs((prevState) => ({ ...prevState, ['steps']: null }));
+			setImage('https://cdn-icons-png.flaticon.com/512/1048/1048392.png')
+			setInputs((prevState) => ({ ...prevState, ['carbs']: 0 }));
+			setInputs((prevState) => ({ ...prevState, ['protein']: 0 }));
+			setInputs((prevState) => ({ ...prevState, ['fat']: 0 }));
+			setInputs((prevState) => ({ ...prevState, ['createdAt']: null }));
+			console.log('Recipe Added!');
+      Alert.alert(
+				'Recipe created!',
+        'Your recipe has been create Successfully!',
+				);
+
+    }).then(() => {
+			
+			setisLoading(false);
+		})
+    .catch((error) => {
+			setisLoading(false);
+      console.log('Something went wrong with create recipe.', error);
+    });
+	}
 
 	const handleOnchange = (text, input) => {
 		setInputs((prevState) => ({ ...prevState, [input]: text }));
@@ -182,6 +365,11 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 		setErrors((prevState) => ({ ...prevState, [input]: error }));
 	};
 
+	if(isLoading) {
+    return (
+      <Loader />
+    )
+  }
 
 	const renderSteps = () => {
 		return (
@@ -297,7 +485,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 					isVisible={modalIngredients}
 					statusBarTranslucent={true}
 					animationInTiming={500}
-					animationOutTiming={1000}
+					animationOutTiming={500}
 				>
 					<View className="flex-1  items-center">
 						<TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
@@ -392,7 +580,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 					isVisible={modalSteps}
 					statusBarTranslucent={true}
 					animationInTiming={500}
-					animationOutTiming={1000}
+					animationOutTiming={500}
 				>
 					<View className="flex-1 justify-center items-center">
 						<TouchableWithoutFeedback className="flex-1" onPress={Keyboard.dismiss}>
@@ -414,7 +602,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 													iconName={'shaker'}
 													placeholder="Enter food step"
 													multiline
-													numberOfLines={4}
+													maxLength={136}
 													error={errors.step}
 												/>
 												<View className="mb-3 w-full items-center">
@@ -477,8 +665,8 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 
 					// ----------------------- Tab 2 --------------------------------------
 					<ScrollView style={styles.container}>
-						<TouchableOpacity onPress={() => this.bs.current.snapTo(0)}>
-							<View className="flex-1 h-52 w-auto bg-gray-600 justify-center">
+						{/* <Pressable onPress={() => this.bs.current.snapTo(0)}> */}
+							<Pressable onPress={() => this.bs.current.snapTo(0)} className="flex-1 h-52 w-auto bg-gray-600 justify-center">
 								<ImageBackground
 									source={{
 										uri: image,
@@ -501,8 +689,8 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 										/>
 									</View>
 								</ImageBackground>
-							</View>
-						</TouchableOpacity>
+							</Pressable>
+						{/* </Pressable> */}
 						<Pressable onPress={() => this.bs.current.snapTo(1)}>
 							<View className="flex-1 flex-col mt-3">
 								<View className="flex-1 flex-col items-center">
@@ -582,7 +770,7 @@ const CreateRecipeScreen = ({ route, navigation }, props) => {
 
 								</View>
 								<View className="flex-1 items-center mb-3" >
-									<Buttons width={'w-[90%]'} title={'Create'}/>
+									<Buttons width={'w-[90%]'} title={'Create'} action={validate}/>
 								</View>
 							</View>
 						</Pressable>

@@ -76,7 +76,7 @@ const ChangeUserProfileScreen = ({ navigation, route }) => {
     }
 
     await firestore()
-      .collection('Users')
+      .collection('users')
       .doc(auth().currentUser?.uid)
       .set({
         gender: inputs.gender,
